@@ -4,9 +4,10 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 
 public enum LightType {
-	PLAYER(50, 10, Color.WHITE, false, 0),
-	TORCH(150, 50, Color.ORANGE, true, 5),
-	FIREBALL(40, 5, Color.ORANGE, true, 10);
+	PLAYER(80, 5, Color.WHITE, false, 0),
+	TORCH(150, 5, Color.ORANGE, true, 5),
+	ELDRITCH_BOLT(10, 0, new Color(0x66E066), false, 0),
+	FIREBALL(40, 1, Color.ORANGE, true, 10);
 	
 	int radius;
 	int minRadius;

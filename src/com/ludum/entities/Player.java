@@ -1,9 +1,12 @@
 package com.ludum.entities;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ludum.Game;
 import com.ludum.entities.spells.Fireball;
+import com.ludum.entities.spells.EldritchBolt;
 import com.ludum.entities.spells.Spell;
 
 public class Player {
@@ -37,7 +40,23 @@ public class Player {
 		if(mana > MAX_MANA) mana = MAX_MANA;
 	}
 	
-	private Spell [] spells;
+	private int level;
+	public int getLevel() { return level; }
+	private int experience;
+	public int getExperience() { return experience; }
+	private int experienceToLevel;
+	public int getExperienceToLevel() { return experienceToLevel; }
+	public void addExperience(int exp) {
+		experience += exp;
+		if(experience >= experienceToLevel) {
+			int carryOver = experienceToLevel % experience;
+			experience = carryOver;
+			level++;
+		}
+	}
+	
+	private List<Spell> spells;
+	public List<Spell> getSpells() { return spells; }
 	private int selectedSpell;
 	
 	public Point2D.Double location;
@@ -46,16 +65,16 @@ public class Player {
 	public Player(Game game) {
 		health = MAX_HEALTH;
 		mana = 50;
+		level = 1;
+		experience = 0;
+		experienceToLevel = 300;
 		
-		spells = new Spell[10];
-		for(int i = 0; i < 10; i++) {
-			spells[i] = new Spell("null", 0, 0, 0);
-		}
+		spells = new ArrayList<>();
 		selectedSpell = 0;
+		spells.add(new EldritchBolt());
+		spells.add(new Fireball());
 		
-		spells[0] = new Fireball();
-		
-		location = new Point2D.Double();
+		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
 		light = LightType.createLight(location, LightType.PLAYER);
 		game.lightFactory.lights.add(light);
 	}
@@ -78,7 +97,7 @@ public class Player {
 	}
 	
 	public Spell getCurrentSpell() {
-		return spells[selectedSpell];
+		return spells.get(selectedSpell);
 	}
 	
 	public void selectSpell(int slot) {

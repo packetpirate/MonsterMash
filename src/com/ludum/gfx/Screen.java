@@ -1,5 +1,6 @@
 package com.ludum.gfx;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -11,15 +12,16 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 import javax.swing.JPanel;
 
 import com.ludum.Game;
+import com.ludum.GameState;
+import com.ludum.HUD;
+import com.ludum.Menu;
 import com.ludum.entities.EnemyFactory;
-import com.ludum.entities.Light;
-import com.ludum.entities.Player;
 import com.ludum.entities.enemies.Enemy;
 import com.ludum.entities.spells.SpellEffect;
 
@@ -27,6 +29,8 @@ public class Screen extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private Game game;
+	public Menu menu;
+	public HUD hud;
 	public Point mousePos;
 	
 	public boolean mouseDown;
@@ -38,10 +42,21 @@ public class Screen extends JPanel {
 		setMinimumSize(d);
 		setMaximumSize(d);
 		setPreferredSize(d);
+
+		this.game = game;
+		menu = new Menu();
+		hud = new HUD(game);
 		
 		mouseDown = false;
 		mousePos = new Point();
 		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent m) {
+				if(Game.state == GameState.MENU) {
+					menu.dispatchClick(new Point2D.Double(mousePos.x, mousePos.y));
+				}
+			}
+			
 			@Override
 			public void mousePressed(MouseEvent m) {
 				mouseDown = true;
@@ -97,8 +112,6 @@ public class Screen extends JPanel {
 				if(key == KeyEvent.VK_P) keys[4] = false;
 			}
 		});
-		
-		this.game = game;
 	}
 	
 	@Override
@@ -106,63 +119,59 @@ public class Screen extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D)g;
 		
-		g2d.setColor(new Color(0x336600));
-		g2d.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
-		
-		for(SpellEffect effect : game.spellEffects) {
-			if(effect.alive) effect.render(g2d);
-		}
-		
-		for(EnemyFactory factory : game.factories) {
-			if(factory.isAlive()) factory.render(g2d);
-		}
-		
-		for(Enemy enemy : game.enemies) {
-			if(enemy.isAlive()) enemy.render(g2d);
-		}
-		
-		g2d.setColor(Color.RED);
-		g2d.fillOval((int)(game.player.location.x - 10), (int)(game.player.location.y - 10), 20, 20);
-		
-		// Draw lights in the light factory.
-		BufferedImage overlay = new BufferedImage(Game.WIDTH, Game.HEIGHT, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D og2d = overlay.createGraphics();
-		og2d.setColor(Color.BLACK);
-		og2d.clearRect(0, 0, Game.WIDTH, Game.HEIGHT);
-		game.lightFactory.render(overlay);
-		
-		g2d.drawImage(overlay, 0, 0, null);
-		
-		{ // Draw the health and mana bars.
-			// Draw the health bar.
-			double hW = (game.player.currentHealth() / Player.MAX_HEALTH) * 94;
-			g2d.setColor(Color.BLACK);
-			g2d.fillRect(5, 5, 102, 24);
+		if(Game.state == GameState.MENU) {
+			menu.render(g2d);
+		} else if(Game.state == GameState.GAME_STARTED) {
+			g2d.setColor(new Color(0x336600));
+			g2d.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
+			
+			AlphaComposite savedComp = (AlphaComposite)g2d.getComposite();
+			
+			synchronized(game.spellEffects) {
+				for(SpellEffect effect : game.spellEffects) {
+					if(effect.alive) effect.render(g2d);
+				}
+			}
+			
+			synchronized(game.factories) {
+				for(EnemyFactory factory : game.factories) {
+					if(factory.isAlive()) factory.render(g2d);
+				}
+			}
+			
+			synchronized(game.enemies) {
+				for(Enemy enemy : game.enemies) {
+					if(enemy.isAlive()) enemy.render(g2d);
+				}
+			}
+			
 			g2d.setColor(Color.RED);
-			g2d.fillRect(9, 9, (int)hW, 16);
+			g2d.fillOval((int)(game.player.location.x - 10), (int)(game.player.location.y - 10), 20, 20);
 			
-			// Draw the mana bar.
-			double mW = (game.player.currentMana() / Player.MAX_MANA) * 94;
-			g2d.setColor(Color.BLACK);
-			g2d.fillRect(5, 31, 102, 24);
-			g2d.setColor(Color.BLUE);
-			g2d.fillRect(9, 35, (int)mW, 16);
-		} // End drawing health and mana.
-		
-		g2d.setColor(Color.BLACK);
-		g2d.drawString(("Current Spell: " + game.player.getCurrentSpell().getName()), 5, 70);
-		g2d.drawString(("Spells On Screen: " + Integer.toString(game.spellEffects.size())), 5, 85);
-		
-		if(game.isPaused()) {
-			Font font = new Font("Serif", Font.PLAIN, 32);
-			FontMetrics metrics = g2d.getFontMetrics(font);
-			String str = "PAUSED";
-			int w = metrics.stringWidth(str);
-			int h = metrics.getHeight();
+			// Draw lights in the light factory.
+			BufferedImage overlay = new BufferedImage(Game.WIDTH, Game.HEIGHT, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D og2d = overlay.createGraphics();
+			og2d.setColor(new Color(0.0f, 0.0f, 0.0f, 0.85f));
+			og2d.clearRect(0, 0, Game.WIDTH, Game.HEIGHT);
+			game.lightFactory.render(overlay);
 			
-			g2d.setColor(Color.BLACK);
-			g2d.setFont(font);
-			g2d.drawString(str, ((Game.WIDTH / 2) - (w / 2)), ((Game.HEIGHT / 2) - (h / 2)));
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f));
+			g2d.drawImage(overlay, 0, 0, null);
+			g2d.setComposite(savedComp);
+			
+			hud.render(g2d);
+			
+			if(game.isPaused()) {
+				Font font = new Font("Serif", Font.PLAIN, 32);
+				FontMetrics metrics = g2d.getFontMetrics(font);
+				String str = "PAUSED";
+				int w = metrics.stringWidth(str);
+				int h = metrics.getHeight();
+				
+				g2d.setColor(Color.WHITE);
+				g2d.setFont(font);
+				g2d.drawString(str, ((Game.WIDTH / 2) - (w / 2)), ((Game.HEIGHT / 2) - (h / 2)));
+			}
 		}
 	}
 	

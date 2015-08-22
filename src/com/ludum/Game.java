@@ -54,19 +54,20 @@ public class Game {
 		
 		// Add a peasant farm.
 		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));
-		lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH);
+		farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
 		factories.add(farm);
 		
 		// TESTING
 		
 		player = new Player(this);
-		player.moveTo(new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2)));
 		
 		paused = false;
 	}	
 	
 	public void update() {
-		if(!isPaused()) {
+		if(Game.state == GameState.MENU) {
+			screen.menu.update(this);
+		} else if((Game.state == GameState.GAME_STARTED) && !isPaused()) {
 			Game.time.update();
 			
 			// Update player information.
@@ -122,6 +123,7 @@ public class Game {
 						if((effect.location.x < 0) || (effect.location.x > Game.WIDTH) ||
 						   (effect.location.y < 0) || (effect.location.y > Game.HEIGHT) ||
 						   (!effect.alive)) {
+							effect.light.alive = false;
 							it.remove();
 							continue;
 						}
@@ -129,11 +131,21 @@ public class Game {
 				}
 			}
 			
-			// Handle spawning enemies from factories.
-			for(EnemyFactory factory : factories) {
-				if(factory.canSpawn()) {
-					synchronized(enemies) {
-						enemies.add(factory.spawnEnemy());
+			synchronized(factories) {
+				if(!factories.isEmpty()) {
+					Iterator<EnemyFactory> it = factories.iterator();
+					while(it.hasNext()) {
+						EnemyFactory factory = it.next();
+						
+						if(!factory.isAlive()) {
+							factory.getLight().alive = false;
+						}
+						
+						if(factory.canSpawn()) {
+							synchronized(enemies) {
+								enemies.add(factory.spawnEnemy());
+							}
+						}
 					}
 				}
 			}
@@ -147,12 +159,16 @@ public class Game {
 						
 						e.update(this);
 						if(!e.isAlive()) {
+							player.addExperience(e.getExperience());
 							it.remove();
 							continue;
 						}
 					}
 				}
 			}
+			
+			// Handle deleting dead lights.
+			lightFactory.destroyLights();
 		} else {
 			Game.time.increaseOffset();
 		}

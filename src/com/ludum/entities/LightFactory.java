@@ -20,6 +20,22 @@ public class LightFactory {
 		return light;
 	}
 	
+	public void destroyLights() {
+		synchronized(lights) {
+			if(!lights.isEmpty()) {
+				Iterator<Light> it = lights.iterator();
+				while(it.hasNext()) {
+					Light light = it.next();
+					
+					if(!light.alive) {
+						it.remove();
+						break;
+					}
+				}
+			}
+		}
+	}
+	
 	public void render(BufferedImage overlay) {
 		synchronized(lights) {
 			if(!lights.isEmpty()) {

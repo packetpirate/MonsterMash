@@ -11,7 +11,7 @@ public class Peasant extends Enemy {
 	public static final int SPEED = 2;
 	
 	public Peasant(Point2D.Double spawnLocation) {
-		super("Peasant", 50, 2, spawnLocation);
+		super("Peasant", 50, 10, 2, spawnLocation);
 	}
 	
 	@Override

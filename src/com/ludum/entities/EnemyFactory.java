@@ -25,6 +25,9 @@ public class EnemyFactory {
 	protected Point2D.Double spawn;
 	public Point2D.Double getSpawnLocation() { return spawn; }
 	protected List<EnemyType> enemyTypes;
+	protected Light light;
+	public Light getLight() { return light; }
+	public void addLight(Light light) { this.light = light; }
 	
 	public EnemyFactory(String name, double health, long spawnRate, Dimension size, Point2D.Double position, Point2D.Double spawn) {
 		this.r = new Random();
@@ -38,6 +41,7 @@ public class EnemyFactory {
 		this.position = position;
 		this.spawn = spawn;
 		this.enemyTypes = new ArrayList<>();
+		this.light = null;
 	}
 	
 	public void render(Graphics2D g2d) {

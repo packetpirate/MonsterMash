@@ -19,6 +19,9 @@ public class Player {
 	private double health;
 	private long lastDamageTaken;
 	public double currentHealth() { return health; }
+	public boolean isAlive() {
+		return (health > 0);
+	}
 	public boolean canTakeDamage() {
 		return (Game.time.getElapsedMillis() >= (lastDamageTaken + INVINCIBILITY_TIME));
 	}
@@ -58,6 +61,16 @@ public class Player {
 	private List<Spell> spells;
 	public List<Spell> getSpells() { return spells; }
 	private int selectedSpell;
+	public int getSelectedSpell() { return selectedSpell; }
+	public Spell getCurrentSpell() {
+		return spells.get(selectedSpell);
+	}
+	public void selectSpell(int slot) {
+		if(slot < spells.size()) selectedSpell = slot;
+	}
+	public void castSpell(Game game) {
+		getCurrentSpell().cast(game);
+	}
 	
 	public Point2D.Double location;
 	public Light light;
@@ -94,21 +107,5 @@ public class Player {
 	public void moveTo(Point2D.Double target) {
 		location.x = target.x;
 		location.y = target.y;
-	}
-	
-	public Spell getCurrentSpell() {
-		return spells.get(selectedSpell);
-	}
-	
-	public void selectSpell(int slot) {
-		selectedSpell = slot;
-	}
-	
-	public void castSpell(Game game) {
-		getCurrentSpell().cast(game);
-	}
-	
-	public boolean isAlive() {
-		return (health > 0);
 	}
 }

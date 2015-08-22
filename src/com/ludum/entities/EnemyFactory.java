@@ -19,6 +19,9 @@ public class EnemyFactory {
 	protected double maxHealth;
 	protected long lastSpawn;
 	protected long spawnRate;
+	protected int enemiesSpawned;
+	public void enemyDeath() { enemiesSpawned--; }
+	protected int spawnCap;
 	protected Dimension size;
 	protected Point2D.Double position;
 	public Point2D.Double getPosition() { return position; }
@@ -29,7 +32,7 @@ public class EnemyFactory {
 	public Light getLight() { return light; }
 	public void addLight(Light light) { this.light = light; }
 	
-	public EnemyFactory(String name, double health, long spawnRate, Dimension size, Point2D.Double position, Point2D.Double spawn) {
+	public EnemyFactory(String name, double health, long spawnRate, int spawnCap, Dimension size, Point2D.Double position, Point2D.Double spawn) {
 		this.r = new Random();
 		
 		this.name = name;
@@ -37,6 +40,8 @@ public class EnemyFactory {
 		this.maxHealth = health;
 		this.lastSpawn = Game.time.getElapsedMillis();
 		this.spawnRate = spawnRate;
+		this.enemiesSpawned = 0;
+		this.spawnCap = spawnCap;
 		this.size = size;
 		this.position = position;
 		this.spawn = spawn;
@@ -68,14 +73,15 @@ public class EnemyFactory {
 	}
 	
 	public boolean canSpawn() {
-		return ((Game.time.getElapsedMillis() >= (lastSpawn + spawnRate)) && isAlive());
+		return (isAlive() && (enemiesSpawned < spawnCap) && (Game.time.getElapsedMillis() >= (lastSpawn + spawnRate)));
 	}
 	
 	public Enemy spawnEnemy() {
 		// Return a random enemy type from the available types in the list.
 		if(!enemyTypes.isEmpty()) {
 			lastSpawn = Game.time.getElapsedMillis();
-			return EnemyType.getEnemy(enemyTypes.get(r.nextInt(enemyTypes.size())), spawn);
+			enemiesSpawned++;
+			return EnemyType.getEnemy(enemyTypes.get(r.nextInt(enemyTypes.size())), this, spawn);
 		}
 		
 		return null;

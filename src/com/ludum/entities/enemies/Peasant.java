@@ -5,13 +5,14 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import com.ludum.Game;
+import com.ludum.entities.EnemyFactory;
 
 // Most basic enemy unit.
 public class Peasant extends Enemy {
 	public static final int SPEED = 2;
 	
-	public Peasant(Point2D.Double spawnLocation) {
-		super("Peasant", 50, 10, 2, spawnLocation);
+	public Peasant(EnemyFactory origin, Point2D.Double spawnLocation) {
+		super(origin, "Peasant", 50, 10, 2, spawnLocation);
 	}
 	
 	@Override

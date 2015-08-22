@@ -49,69 +49,6 @@ public class Screen extends JPanel {
 		
 		mouseDown = false;
 		mousePos = new Point();
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent m) {
-				if(Game.state == GameState.MENU) {
-					menu.dispatchClick(new Point2D.Double(mousePos.x, mousePos.y));
-				}
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent m) {
-				mouseDown = true;
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent m) {
-				mouseDown = false;
-			}
-		});
-		
-		addMouseMotionListener(new MouseAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent m) {
-				mousePos = m.getPoint();
-			}
-			
-			@Override
-			public void mouseDragged(MouseEvent m) {
-				mousePos = m.getPoint();
-			}
-		});
-		
-		keys = new boolean[5];
-		for(int i = 0; i < 5; i++) {
-			keys[i] = false;
-		}
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent k) {
-				int key = k.getKeyCode();
-				
-				if(key == KeyEvent.VK_W) keys[0] = true;
-				if(key == KeyEvent.VK_A) keys[1] = true;
-				if(key == KeyEvent.VK_S) keys[2] = true;
-				if(key == KeyEvent.VK_D) keys[3] = true;
-				
-				if(key == KeyEvent.VK_P) {
-					if(!keys[4]) game.togglePause();
-					keys[4] = true;
-				}
-			}
-			
-			@Override
-			public void keyReleased(KeyEvent k) {
-				int key = k.getKeyCode();
-				
-				if(key == KeyEvent.VK_W) keys[0] = false;
-				if(key == KeyEvent.VK_A) keys[1] = false;
-				if(key == KeyEvent.VK_S) keys[2] = false;
-				if(key == KeyEvent.VK_D) keys[3] = false;
-				
-				if(key == KeyEvent.VK_P) keys[4] = false;
-			}
-		});
 	}
 	
 	@Override
@@ -175,7 +112,7 @@ public class Screen extends JPanel {
 		}
 	}
 	
-	private boolean inBounds(int x, int y) {
+	public static boolean inBounds(int x, int y) {
 		return ((x >= 0) && (x < Game.WIDTH) && (y >= 0) && (y < Game.HEIGHT));
 	}
 }

@@ -1,7 +1,10 @@
 package com.ludum;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.geom.Rectangle2D;
 
 import com.ludum.entities.Player;
 
@@ -41,24 +44,33 @@ public class HUD {
 			g2d.setColor(Color.GREEN);
 			g2d.fillRect(15, 61, (int)eW, 11);
 			
-			// Draw the spell slot bar.
-			int slotSize = 32;
-			int slotBarWidth = (slotSize * game.player.getSpells().size()) + ((game.player.getSpells().size() + 1) * 4);
-			int slotBarHeight = slotSize + 8;
-			int slotBarX = ((Game.WIDTH / 2) - (slotBarWidth / 2));
-			int slotBarY = (Game.HEIGHT - slotBarHeight - 5);
-			
-			g2d.setColor(Color.GRAY);
-			g2d.fillRect(slotBarX, slotBarY, slotBarWidth, slotBarHeight);
-			g2d.setColor(Color.WHITE);
-			g2d.drawRect(slotBarX, slotBarY, slotBarWidth, slotBarHeight);
-			
-			for(int i = 0; i < game.player.getSpells().size(); i++) {
-				g2d.setColor(Color.BLACK);
-				g2d.fillRect((slotBarX + (i * 32) + (i * 4) + 4), (slotBarY + 4), 32, 32);
+			{ // Draw the spell slot bar.
+				int slotSize = 32;
+				int slotBarWidth = (slotSize * game.player.getSpells().size()) + ((game.player.getSpells().size() + 1) * 4);
+				int slotBarHeight = slotSize + 8;
+				int slotBarX = ((Game.WIDTH / 2) - (slotBarWidth / 2));
+				int slotBarY = (Game.HEIGHT - slotBarHeight - 5);
+				
+				g2d.setColor(Color.GRAY);
+				g2d.fillRect(slotBarX, slotBarY, slotBarWidth, slotBarHeight);
 				g2d.setColor(Color.WHITE);
-				g2d.drawRect((slotBarX + (i * 32) + (i * 4) + 4), (slotBarY + 4), 32, 32);
-			}
+				g2d.drawRect(slotBarX, slotBarY, slotBarWidth, slotBarHeight);
+				
+				for(int i = 0; i < game.player.getSpells().size(); i++) {
+					Rectangle2D.Double rect = new Rectangle2D.Double((slotBarX + (i * 32) + (i * 4) + 4), (slotBarY + 4), 32, 32);
+					g2d.setColor(Color.BLACK);
+					g2d.fillRect((slotBarX + (i * 32) + (i * 4) + 4), (slotBarY + 4), 32, 32);
+					
+					Stroke oldStroke = g2d.getStroke();
+					if(i == game.player.getSelectedSpell()) {
+						g2d.setColor(Color.WHITE);
+						g2d.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
+                                1.0f, new float[]{16.0f, 16.0f}, 8.0f));
+					} else g2d.setColor(Color.DARK_GRAY);
+					g2d.draw(rect);
+					g2d.setStroke(oldStroke);
+				}
+			} // End spell slot drawing.
 
 			g2d.setColor(Color.WHITE);
 			g2d.drawString(("Level: " + game.player.getLevel()), 5, 96);

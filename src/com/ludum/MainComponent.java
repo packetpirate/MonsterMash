@@ -4,21 +4,20 @@ import javax.swing.JFrame;
 
 public class MainComponent implements Runnable {
 	private Game game;
-	private boolean running;
 	
 	public MainComponent() {
-		running = false;
+		
 	}
 	
 	public void start() {
-		if(running) return;
-		running = true;
+		if(game.running) return;
+		game.running = true;
 		new Thread(this).start();
 	}
 	
 	@Override
 	public void run() {
-		while(running) {
+		while(game.running) {
 			game.update();
 			game.render();
 			
@@ -30,11 +29,12 @@ public class MainComponent implements Runnable {
 		}
 		
 		dispose();
+		System.exit(0);
 	}
 	
 	public void stop() {
-		if(!running) return;
-		running = false;
+		if(!game.running) return;
+		game.running = false;
 	}
 	
 	public void dispose() {

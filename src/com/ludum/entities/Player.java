@@ -17,12 +17,12 @@ public class Player {
 	private long lastDamageTaken;
 	public double currentHealth() { return health; }
 	public boolean canTakeDamage() {
-		return (Game.gameTime.getElapsedMillis() >= (lastDamageTaken + INVINCIBILITY_TIME));
+		return (Game.time.getElapsedMillis() >= (lastDamageTaken + INVINCIBILITY_TIME));
 	}
 	public void takeDamage(double amnt) { 
 		health -= amnt;
 		if(health < 0) health = 0;
-		lastDamageTaken = Game.gameTime.getElapsedMillis();
+		lastDamageTaken = Game.time.getElapsedMillis();
 	}
 	public void heal(double amnt) {
 		health += amnt;
@@ -41,6 +41,7 @@ public class Player {
 	private int selectedSpell;
 	
 	public Point2D.Double location;
+	public Light light;
 	
 	public Player(Game game) {
 		health = MAX_HEALTH;
@@ -55,6 +56,8 @@ public class Player {
 		spells[0] = new Fireball();
 		
 		location = new Point2D.Double();
+		light = LightType.createLight(location, LightType.PLAYER);
+		game.lightFactory.lights.add(light);
 	}
 	
 	public void update() {
@@ -65,6 +68,8 @@ public class Player {
 	public void move(double dx, double dy) {
 		location.x += dx;
 		location.y += dy;
+		light.location.x = location.x;
+		light.location.y = location.y;
 	}
 	
 	public void moveTo(Point2D.Double target) {

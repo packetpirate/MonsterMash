@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.ludum.entities.EnemyFactory;
+import com.ludum.entities.LightFactory;
+import com.ludum.entities.LightType;
 import com.ludum.entities.Player;
 import com.ludum.entities.enemies.Enemy;
 import com.ludum.entities.factories.Farm;
@@ -18,9 +20,11 @@ public class Game {
 	public static final int WIDTH = 640;
 	public static final int HEIGHT = (WIDTH * 3) / 4;
 	
-	public static GameTime gameTime;
+	public static GameTime time;
+	public static GameState state;
 	
 	public Screen screen;
+	public LightFactory lightFactory;
 	public List<EnemyFactory> factories;
 	public List<Enemy> enemies;
 	public List<SpellEffect> spellEffects;
@@ -35,11 +39,13 @@ public class Game {
 	}
 	
 	public Game() {
-		gameTime = new GameTime();
+		time = new GameTime();
+		state = GameState.MENU;
 		
 		screen = new Screen(this);
 		screen.setFocusable(true);
 		
+		lightFactory = new LightFactory();
 		factories = Collections.synchronizedList(new ArrayList<>());
 		enemies = Collections.synchronizedList(new ArrayList<>());
 		spellEffects = Collections.synchronizedList(new ArrayList<>());
@@ -47,7 +53,9 @@ public class Game {
 		// TESTING
 		
 		// Add a peasant farm.
-		factories.add(new Farm(new Point2D.Double((Game.WIDTH - 50), 50)));
+		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));
+		lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH);
+		factories.add(farm);
 		
 		// TESTING
 		
@@ -59,7 +67,7 @@ public class Game {
 	
 	public void update() {
 		if(!isPaused()) {
-			Game.gameTime.update();
+			Game.time.update();
 			
 			// Update player information.
 			player.update();
@@ -146,7 +154,7 @@ public class Game {
 				}
 			}
 		} else {
-			Game.gameTime.increaseOffset();
+			Game.time.increaseOffset();
 		}
 	}
 	

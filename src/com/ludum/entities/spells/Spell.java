@@ -13,14 +13,14 @@ public class Spell {
 	
 	public Spell(String name, long cooldown, int manaCost, double damage) {
 		this.name = name;
-		this.lastCast = Game.gameTime.getElapsedMillis() - cooldown;
+		this.lastCast = Game.time.getElapsedMillis() - cooldown;
 		this.cooldown = cooldown;
 		this.manaCost = manaCost;
 		this.damage = damage;
 	}
 	
 	public boolean canCast() {
-		return (Game.gameTime.getElapsedMillis() >= (lastCast + cooldown));
+		return (Game.time.getElapsedMillis() >= (lastCast + cooldown));
 	}
 	
 	public void cast(Game game) {

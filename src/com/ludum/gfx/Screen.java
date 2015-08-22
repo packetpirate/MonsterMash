@@ -11,11 +11,14 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import javax.swing.JPanel;
 
 import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
+import com.ludum.entities.Light;
 import com.ludum.entities.Player;
 import com.ludum.entities.enemies.Enemy;
 import com.ludum.entities.spells.SpellEffect;
@@ -121,6 +124,15 @@ public class Screen extends JPanel {
 		g2d.setColor(Color.RED);
 		g2d.fillOval((int)(game.player.location.x - 10), (int)(game.player.location.y - 10), 20, 20);
 		
+		// Draw lights in the light factory.
+		BufferedImage overlay = new BufferedImage(Game.WIDTH, Game.HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D og2d = overlay.createGraphics();
+		og2d.setColor(Color.BLACK);
+		og2d.clearRect(0, 0, Game.WIDTH, Game.HEIGHT);
+		game.lightFactory.render(overlay);
+		
+		g2d.drawImage(overlay, 0, 0, null);
+		
 		{ // Draw the health and mana bars.
 			// Draw the health bar.
 			double hW = (game.player.currentHealth() / Player.MAX_HEALTH) * 94;
@@ -152,5 +164,9 @@ public class Screen extends JPanel {
 			g2d.setFont(font);
 			g2d.drawString(str, ((Game.WIDTH / 2) - (w / 2)), ((Game.HEIGHT / 2) - (h / 2)));
 		}
+	}
+	
+	private boolean inBounds(int x, int y) {
+		return ((x >= 0) && (x < Game.WIDTH) && (y >= 0) && (y < Game.HEIGHT));
 	}
 }

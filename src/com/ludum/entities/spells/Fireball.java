@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
+import com.ludum.entities.LightType;
 import com.ludum.entities.enemies.Enemy;
 
 public class Fireball extends Spell {
@@ -19,6 +20,11 @@ public class Fireball extends Spell {
 		if(game.player.currentMana() >= manaCost) {
 			game.player.useMana(manaCost);
 			game.registerSpellEffect(new SpellEffect(new Point2D.Double(game.player.location.x, game.player.location.y), new Point2D.Double(game.screen.mousePos.x, game.screen.mousePos.y)) {
+				{ // Begin pseudo-constructor.
+					light = LightType.createLight(location, LightType.FIREBALL);
+					game.lightFactory.lights.add(light);
+				} // End pseudo-constructor.
+				
 				@Override
 				public void update(Game game) {
 					// Do fireball update stuff here.
@@ -27,10 +33,12 @@ public class Fireball extends Spell {
 					
 					location.x += dx;
 					location.y += dy;
+					light.location.x = location.x;
+					light.location.y = location.y;
 					
 					// Handle collisions with enemies.
 					synchronized(game.enemies) {
-						if(this.alive && !game.enemies.isEmpty()) {
+						if(alive && !game.enemies.isEmpty()) {
 							Iterator<Enemy> it = game.enemies.iterator();
 							while(it.hasNext()) {
 								Enemy e = it.next();
@@ -38,8 +46,9 @@ public class Fireball extends Spell {
 								double a = e.location.x - location.x;
 								double b = e.location.y - location.y;
 								double dist = Math.sqrt((a * a) + (b * b));
-								if(this.alive && e.isAlive() && (dist <= 10)) {
-									this.alive = false;
+								if(alive && e.isAlive() && (dist <= 10)) {
+									alive = false;
+									light.alive = false;
 									e.takeDamage(damage);
 								}
 							}
@@ -48,13 +57,14 @@ public class Fireball extends Spell {
 					
 					// Handle collisions with factories.
 					synchronized(game.factories) {
-						if(this.alive && !game.factories.isEmpty()) {
+						if(alive && !game.factories.isEmpty()) {
 							Iterator<EnemyFactory> it = game.factories.iterator();
 							while(it.hasNext()) {
 								EnemyFactory ef = it.next();
 								
-								if(this.alive && ef.isAlive() && ef.collision(location)) {
-									this.alive = false;
+								if(alive && ef.isAlive() && ef.collision(location)) {
+									alive = false;
+									light.alive = false;
 									ef.takeDamage(damage);
 								}
 							}
@@ -69,7 +79,7 @@ public class Fireball extends Spell {
 				}
 			});
 			
-			lastCast = Game.gameTime.getElapsedMillis();
+			lastCast = Game.time.getElapsedMillis();
 		}
 	}
 }

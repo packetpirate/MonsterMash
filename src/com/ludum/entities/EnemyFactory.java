@@ -21,7 +21,9 @@ public class EnemyFactory {
 	protected long spawnRate;
 	protected Dimension size;
 	protected Point2D.Double position;
+	public Point2D.Double getPosition() { return position; }
 	protected Point2D.Double spawn;
+	public Point2D.Double getSpawnLocation() { return spawn; }
 	protected List<EnemyType> enemyTypes;
 	
 	public EnemyFactory(String name, double health, long spawnRate, Dimension size, Point2D.Double position, Point2D.Double spawn) {
@@ -30,7 +32,7 @@ public class EnemyFactory {
 		this.name = name;
 		this.health = health;
 		this.maxHealth = health;
-		this.lastSpawn = Game.gameTime.getElapsedMillis();
+		this.lastSpawn = Game.time.getElapsedMillis();
 		this.spawnRate = spawnRate;
 		this.size = size;
 		this.position = position;
@@ -62,13 +64,13 @@ public class EnemyFactory {
 	}
 	
 	public boolean canSpawn() {
-		return ((Game.gameTime.getElapsedMillis() >= (lastSpawn + spawnRate)) && isAlive());
+		return ((Game.time.getElapsedMillis() >= (lastSpawn + spawnRate)) && isAlive());
 	}
 	
 	public Enemy spawnEnemy() {
 		// Return a random enemy type from the available types in the list.
 		if(!enemyTypes.isEmpty()) {
-			lastSpawn = Game.gameTime.getElapsedMillis();
+			lastSpawn = Game.time.getElapsedMillis();
 			return EnemyType.getEnemy(enemyTypes.get(r.nextInt(enemyTypes.size())), spawn);
 		}
 		

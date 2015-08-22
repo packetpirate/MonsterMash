@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import com.ludum.entities.EnemyFactory;
+import com.ludum.entities.Light;
+import com.ludum.entities.LightType;
 import com.ludum.entities.enemies.EnemyType;
 
 public class Farm extends EnemyFactory {

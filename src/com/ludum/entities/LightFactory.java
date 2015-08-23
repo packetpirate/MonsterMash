@@ -14,6 +14,10 @@ public class LightFactory {
 		lights = Collections.synchronizedList(new ArrayList<>());
 	}
 	
+	public void reset() {
+		lights.clear();
+	}
+	
 	public Light createLight(Point2D.Double location, LightType type) {
 		Light light = LightType.createLight(location, type);
 		lights.add(light);

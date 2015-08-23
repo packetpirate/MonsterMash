@@ -28,6 +28,10 @@ public class SpellEffect {
 		this.theta = Math.atan2((target.y - location.y), (target.x - location.x));
 	}
 	
+	public void reset() {
+		
+	}
+	
 	public void update(Game game) {
 		// Handle collisions with enemies.
 		synchronized(game.enemies) {

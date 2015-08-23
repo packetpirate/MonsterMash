@@ -49,6 +49,12 @@ public class EnemyFactory {
 		this.light = null;
 	}
 	
+	public void reset() {
+		health = maxHealth;
+		lastSpawn = Game.time.getElapsedMillis();
+		enemiesSpawned = 0;
+	}
+	
 	public void render(Graphics2D g2d) {
 		
 	}

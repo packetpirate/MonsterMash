@@ -30,6 +30,11 @@ public class Fireball extends Spell {
 				} // End pseudo-constructor.
 				
 				@Override
+				public void reset() {
+					setFlag("exploded", false);
+				}
+				
+				@Override
 				public void update(Game game) {
 					// Do fireball update stuff here.
 					double dx = Math.cos(theta) * 5;

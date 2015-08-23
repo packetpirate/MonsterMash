@@ -38,6 +38,7 @@ public class Game {
 	public Player player;
 	
 	public boolean running;
+	public boolean reset;
 	private boolean paused;
 	public boolean isPaused() { return paused; }
 	public void togglePause() {
@@ -57,6 +58,8 @@ public class Game {
 			public void mouseClicked(MouseEvent m) {
 				if(Game.state == GameState.MENU) {
 					screen.menu.dispatchClick(new Point2D.Double(screen.mousePos.x, screen.mousePos.y));
+				} else if(Game.state == GameState.GAME_OVER) {
+					screen.gameOver.dispatchClick(new Point2D.Double(screen.mousePos.x, screen.mousePos.y));
 				}
 			}
 			
@@ -207,8 +210,6 @@ public class Game {
 		enemies = Collections.synchronizedList(new ArrayList<>());
 		spellEffects = Collections.synchronizedList(new ArrayList<>());
 		
-		// TESTING
-		
 		// Add a peasant farm.
 		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));
 		farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
@@ -219,126 +220,163 @@ public class Game {
 		barracks.addLight(lightFactory.createLight(barracks.getSpawnLocation(), LightType.TORCH));
 		factories.add(barracks);
 		
-		// TESTING
-		
 		player = new Player(this);
 		
 		running = false;
 		paused = false;
+		reset = false;
 	}	
 	
 	public void update() {
 		if(Game.state == GameState.MENU) {
 			screen.menu.update(this);
-		} else if((Game.state == GameState.GAME_STARTED) && !isPaused()) {
-			Game.time.update();
-			
-			// Update player information.
-			player.update();
-			if(player.isAlive()) {
-				// Check for collisions with enemies.
-				synchronized(enemies) {
-					if(!enemies.isEmpty()) {
-						Iterator<Enemy> it = enemies.iterator();
+			if(reset) reset = false;
+		} else if(Game.state == GameState.GAME_STARTED) {
+			if(reset) reset = false;
+			if(!isPaused()) {
+				Game.time.update();
+				
+				// Update player information.
+				player.update();
+				if(player.isAlive()) {
+					// Check for collisions with enemies.
+					synchronized(enemies) {
+						if(!enemies.isEmpty()) {
+							Iterator<Enemy> it = enemies.iterator();
+							while(it.hasNext()) {
+								Enemy e = it.next();
+								
+								double a = (e.location.x - player.location.x);
+								double b = (e.location.y - player.location.y);
+								double dist = Math.sqrt((a * a) + (b * b));
+								if(e.isAlive() && player.canTakeDamage() && (dist <= 10)) {
+									player.takeDamage(e.getDamage());
+									continue;
+								}
+							}
+						}
+					}
+					
+					if(screen.keys[1]) {
+						player.move(0, -5);
+					}
+					if(screen.keys[2]) {
+						player.move(-5, 0);
+					}
+					if(screen.keys[3]) {
+						player.move(0, 5);
+					}
+					if(screen.keys[4]) {
+						player.move(5, 0);
+					}
+					
+					if(screen.mouseDown) {
+						if(player.getCurrentSpell().canCast()) player.castSpell(this);
+					}
+				}
+				
+				if(!player.isAlive()) {
+					Game.state = GameState.GAME_OVER;
+				}
+				
+				// Handle spell effects.
+				for(SpellEffect effect : spellEffects) {
+					effect.update(this);
+				}
+				
+				// Remove spell effects that are out of bounds.
+				synchronized(spellEffects) {
+					if(!spellEffects.isEmpty()) {
+						Iterator<SpellEffect> it = spellEffects.iterator();
 						while(it.hasNext()) {
-							Enemy e = it.next();
-							
-							double a = (e.location.x - player.location.x);
-							double b = (e.location.y - player.location.y);
-							double dist = Math.sqrt((a * a) + (b * b));
-							if(e.isAlive() && player.canTakeDamage() && (dist <= 10)) {
-								player.takeDamage(e.getDamage());
+							SpellEffect effect = it.next();
+							if((effect.location.x < 0) || (effect.location.x > Game.WIDTH) ||
+							   (effect.location.y < 0) || (effect.location.y > Game.HEIGHT) ||
+							   (!effect.alive)) {
+								effect.light.killLight();
+								it.remove();
 								continue;
 							}
 						}
 					}
 				}
 				
-				if(screen.keys[1]) {
-					player.move(0, -5);
-				}
-				if(screen.keys[2]) {
-					player.move(-5, 0);
-				}
-				if(screen.keys[3]) {
-					player.move(0, 5);
-				}
-				if(screen.keys[4]) {
-					player.move(5, 0);
-				}
-				
-				if(screen.mouseDown) {
-					if(player.getCurrentSpell().canCast()) player.castSpell(this);
-				}
-			}
-			
-			if(!player.isAlive()) {
-				Game.state = GameState.GAME_OVER;
-			}
-			
-			// Handle spell effects.
-			for(SpellEffect effect : spellEffects) {
-				effect.update(this);
-			}
-			
-			// Remove spell effects that are out of bounds.
-			synchronized(spellEffects) {
-				if(!spellEffects.isEmpty()) {
-					Iterator<SpellEffect> it = spellEffects.iterator();
-					while(it.hasNext()) {
-						SpellEffect effect = it.next();
-						if((effect.location.x < 0) || (effect.location.x > Game.WIDTH) ||
-						   (effect.location.y < 0) || (effect.location.y > Game.HEIGHT) ||
-						   (!effect.alive)) {
-							effect.light.killLight();
-							it.remove();
-							continue;
-						}
-					}
-				}
-			}
-			
-			synchronized(factories) {
-				if(!factories.isEmpty()) {
-					Iterator<EnemyFactory> it = factories.iterator();
-					while(it.hasNext()) {
-						EnemyFactory factory = it.next();
-						
-						if(!factory.isAlive()) {
-							factory.getLight().killLight();
-						}
-						
-						if(factory.canSpawn()) {
-							synchronized(enemies) {
-								enemies.add(factory.spawnEnemy());
+				synchronized(factories) {
+					if(!factories.isEmpty()) {
+						Iterator<EnemyFactory> it = factories.iterator();
+						while(it.hasNext()) {
+							EnemyFactory factory = it.next();
+							
+							if(!factory.isAlive()) {
+								factory.getLight().killLight();
+							}
+							
+							if(factory.canSpawn()) {
+								synchronized(enemies) {
+									enemies.add(factory.spawnEnemy());
+								}
 							}
 						}
 					}
 				}
-			}
-			
-			// Update enemy information.
-			synchronized(enemies) {
-				if(!enemies.isEmpty()) {
-					Iterator<Enemy> it = enemies.iterator();
-					while(it.hasNext()) {
-						Enemy e = it.next();
-						
-						e.update(this);
-						if(!e.isAlive()) {
-							player.addExperience(e.getExperience());
-							e.origin.enemyDeath();
-							it.remove();
-							continue;
+				
+				// Update enemy information.
+				synchronized(enemies) {
+					if(!enemies.isEmpty()) {
+						Iterator<Enemy> it = enemies.iterator();
+						while(it.hasNext()) {
+							Enemy e = it.next();
+							
+							e.update(this);
+							if(!e.isAlive()) {
+								player.addExperience(e.getExperience());
+								e.origin.enemyDeath();
+								it.remove();
+								continue;
+							}
 						}
 					}
 				}
+				
+				// Handle deleting dead lights.
+				lightFactory.destroyLights();
+			} else {
+				Game.time.increaseOffset();
 			}
-			
-			// Handle deleting dead lights.
-			lightFactory.destroyLights();
-		} else {
-			Game.time.increaseOffset();
+		} else if(Game.state == GameState.GAME_OVER) {
+			screen.gameOver.update(this);
+			if(!reset) {
+				lightFactory.reset();
+				
+				for(EnemyFactory factory : factories) {
+					factory.reset();
+				}
+				factories.clear();
+				
+				for(Enemy e : enemies) {
+					e.reset();
+				}
+				enemies.clear();
+				
+				for(SpellEffect spe : spellEffects) {
+					spe.reset();
+				}
+				spellEffects.clear();
+				
+				// Add a peasant farm.
+				Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));
+				farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
+				factories.add(farm);
+				
+				// Add a barracks.
+				Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 50), (Game.HEIGHT - 50)));
+				barracks.addLight(lightFactory.createLight(barracks.getSpawnLocation(), LightType.TORCH));
+				factories.add(barracks);
+				
+				player.resetPlayer(this);
+				reset = true;
+				paused = false;
+			}
 		}
 	}
 	

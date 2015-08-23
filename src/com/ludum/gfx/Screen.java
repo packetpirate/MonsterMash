@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import com.ludum.Game;
+import com.ludum.GameOver;
 import com.ludum.GameState;
 import com.ludum.HUD;
 import com.ludum.Menu;
@@ -28,6 +29,7 @@ public class Screen extends JPanel {
 	
 	private Game game;
 	public Menu menu;
+	public GameOver gameOver;
 	public HUD hud;
 	public Point mousePos;
 	
@@ -43,6 +45,7 @@ public class Screen extends JPanel {
 
 		this.game = game;
 		menu = new Menu();
+		gameOver = new GameOver();
 		hud = new HUD(game);
 		
 		mouseDown = false;
@@ -120,7 +123,7 @@ public class Screen extends JPanel {
 				g2d.drawString(str, ((Game.WIDTH / 2) - (w / 2)), ((Game.HEIGHT / 2) - (h / 2)));
 			}
 		} else if(Game.state == GameState.GAME_OVER) {
-			// TODO: Draw game over screen.
+			gameOver.render(g2d);
 		}
 	}
 	

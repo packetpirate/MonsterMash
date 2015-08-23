@@ -53,7 +53,7 @@ public class Player {
 	public void addExperience(int exp) {
 		experience += exp;
 		if(experience >= experienceToLevel) {
-			int carryOver = experienceToLevel % experience;
+			int carryOver = experience - experienceToLevel;
 			experience = carryOver;
 			level++;
 		}
@@ -92,6 +92,19 @@ public class Player {
 		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
 		light = LightType.createLight(location, LightType.PLAYER);
 		game.lightFactory.lights.add(light);
+	}
+	
+	public void resetPlayer(Game game) {
+		health = MAX_HEALTH;
+		mana = 50;
+		level = 1;
+		experience = 0;
+		experienceToLevel = 300;
+		
+		selectedSpell = 0;
+		
+		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
+		light = game.lightFactory.createLight(location, LightType.PLAYER);
 	}
 	
 	public void update() {

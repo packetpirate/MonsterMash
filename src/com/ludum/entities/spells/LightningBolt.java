@@ -1,6 +1,5 @@
 package com.ludum.entities.spells;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
@@ -47,6 +46,14 @@ public class LightningBolt extends Spell {
 					
 					setFlag("struck", false);
 				} // End pseudo-constructor.
+				
+				@Override
+				public void reset() {
+					strikes.clear();
+					strikeTime = 0;
+					
+					setFlag("struck", false);
+				}
 				
 				@Override
 				public void update(Game game) {

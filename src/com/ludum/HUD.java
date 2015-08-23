@@ -7,7 +7,6 @@ import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 
 import com.ludum.entities.Player;
-import com.ludum.entities.spells.LightningBolt;
 
 public class HUD {
 	private Game game;

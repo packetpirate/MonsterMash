@@ -32,6 +32,10 @@ public class Enemy {
 		this.projectiles = Collections.synchronizedList(new ArrayList<>());
 	}
 	
+	public void reset() {
+		projectiles.clear();
+	}
+	
 	public void update(Game game) {
 		synchronized(projectiles) {
 			if(!projectiles.isEmpty()) {

@@ -52,7 +52,6 @@ public class Menu {
 			FontMetrics metrics = g2d.getFontMetrics(font);
 			String str = "Start";
 			int w = metrics.stringWidth(str);
-			int h = metrics.getHeight();
 			
 			Path2D.Double path = new Path2D.Double();
 			path.moveTo(startButton.x, (startButton.y + 15));

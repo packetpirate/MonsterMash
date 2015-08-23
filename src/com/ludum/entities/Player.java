@@ -2,13 +2,16 @@ package com.ludum.entities;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.ludum.Game;
+import com.ludum.entities.minions.Minion;
 import com.ludum.entities.spells.EldritchBolt;
 import com.ludum.entities.spells.Fireball;
 import com.ludum.entities.spells.LightningBolt;
 import com.ludum.entities.spells.Spell;
+import com.ludum.entities.spells.summons.SummonZombie;
 
 public class Player {
 	private final long INVINCIBILITY_TIME = 100;
@@ -16,6 +19,7 @@ public class Player {
 	
 	public static double MAX_HEALTH = 100;
 	public static double MAX_MANA = 100;
+	public static int MAX_SUMMONS = 15;
 	
 	private double health;
 	private long lastDamageTaken;
@@ -73,6 +77,16 @@ public class Player {
 		getCurrentSpell().cast(game);
 	}
 	
+	private int summonCap;
+	private List<Minion> minions;
+	public List<Minion> getMinions() { return minions; }
+	public void summon(Minion minion) {
+		if(summonCap >= minion.getSummmonCost()) {
+			minions.add(minion);
+			summonCap -= minion.getSummmonCost();
+		}
+	}
+	
 	public Point2D.Double location;
 	public Light light;
 	
@@ -88,6 +102,10 @@ public class Player {
 		spells.add(new EldritchBolt());
 		spells.add(new Fireball());
 		spells.add(new LightningBolt());
+		spells.add(new SummonZombie());
+		
+		summonCap = Player.MAX_SUMMONS;
+		minions = new ArrayList<>();
 		
 		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
 		light = LightType.createLight(location, LightType.PLAYER);
@@ -103,16 +121,35 @@ public class Player {
 		
 		selectedSpell = 0;
 		
+		summonCap = Player.MAX_SUMMONS;
+		minions.clear();
+		
 		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
 		light = game.lightFactory.createLight(location, LightType.PLAYER);
 	}
 	
-	public void update() {
+	public void update(Game game) {
 		mana += MANA_REGEN_RATE;
 		if(mana >= MAX_MANA) mana = MAX_MANA;
 		
 		for(Spell sp : spells) {
-			sp.update();
+			sp.update(game);
+		}
+		
+		synchronized(minions) {
+			if(!minions.isEmpty()) {
+				Iterator<Minion> it = minions.iterator();
+				while(it.hasNext()) {
+					Minion m = it.next();
+					
+					m.update(game);
+					if(!m.isAlive()) {
+						summonCap += m.getSummmonCost();
+						it.remove();
+						continue;
+					}
+				}
+			}
 		}
 	}
 	

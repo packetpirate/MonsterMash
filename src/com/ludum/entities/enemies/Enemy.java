@@ -10,6 +10,7 @@ import java.util.List;
 import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.Projectile;
+import com.ludum.entities.minions.Minion;
 
 public class Enemy {
 	public EnemyFactory origin;
@@ -37,6 +38,22 @@ public class Enemy {
 	}
 	
 	public void update(Game game) {
+		synchronized(game.player.getMinions()) {
+			if(!game.player.getMinions().isEmpty()) {
+				Iterator<Minion> it = game.player.getMinions().iterator();
+				while(it.hasNext()) {
+					Minion m = it.next();
+					
+					double a = (m.location.x - location.x);
+					double b = (m.location.y - location.y);
+					double dist = Math.sqrt((a * a) + (b * b));
+					if(m.isAlive() && m.canTakeDamage() && (dist <= 20)) {
+						m.takeDamage(damage);
+					}
+				}
+			}
+		}
+		
 		synchronized(projectiles) {
 			if(!projectiles.isEmpty()) {
 				Iterator<Projectile> it = projectiles.iterator();

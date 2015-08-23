@@ -21,6 +21,8 @@ import com.ludum.HUD;
 import com.ludum.Menu;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.enemies.Enemy;
+import com.ludum.entities.items.Grave;
+import com.ludum.entities.minions.Minion;
 import com.ludum.entities.spells.LightningBolt;
 import com.ludum.entities.spells.SpellEffect;
 
@@ -89,9 +91,21 @@ public class Screen extends JPanel {
 				}
 			}
 			
+			synchronized(game.graves) {
+				for(Grave gr : game.graves) {
+					if(gr.isAlive()) gr.render(g2d);
+				}
+			}
+			
 			synchronized(game.enemies) {
 				for(Enemy enemy : game.enemies) {
 					if(enemy.isAlive()) enemy.render(g2d);
+				}
+			}
+			
+			synchronized(game.player.getMinions()) {
+				for(Minion m : game.player.getMinions()) {
+					if(m.isAlive()) m.render(g2d);
 				}
 			}
 			
@@ -129,5 +143,11 @@ public class Screen extends JPanel {
 	
 	public static boolean inBounds(int x, int y) {
 		return ((x >= 0) && (x < Game.WIDTH) && (y >= 0) && (y < Game.HEIGHT));
+	}
+	
+	public static double dist(Point2D.Double origin, Point2D.Double target) {
+		double a = (target.x - origin.x);
+		double b = (target.y - origin.y);
+		return Math.sqrt((a * a) + (b * b));
 	}
 }

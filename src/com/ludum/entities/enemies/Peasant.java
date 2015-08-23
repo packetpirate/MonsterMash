@@ -17,6 +17,8 @@ public class Peasant extends Enemy {
 	
 	@Override
 	public void update(Game game) {
+		super.update(game);
+		
 		if(isAlive()) {
 			// Basic enemy. Just travels toward the player.
 			double theta = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));

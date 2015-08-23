@@ -27,7 +27,7 @@ public class LightningBolt extends Spell {
 	}
 	
 	@Override
-	public void update() {
+	public void update(Game game) {
 		synchronized(LightningBolt.strikes) {
 			if(!LightningBolt.strikes.isEmpty() && (Game.time.getElapsedMillis() >= (LightningBolt.strikeTime + 1000))) {
 				LightningBolt.strikes.clear();

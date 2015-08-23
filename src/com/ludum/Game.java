@@ -18,6 +18,7 @@ import com.ludum.entities.Player;
 import com.ludum.entities.enemies.Enemy;
 import com.ludum.entities.factories.Barracks;
 import com.ludum.entities.factories.Farm;
+import com.ludum.entities.items.Grave;
 import com.ludum.entities.spells.SpellEffect;
 import com.ludum.gfx.Screen;
 
@@ -34,6 +35,7 @@ public class Game {
 	public List<EnemyFactory> factories;
 	public List<Enemy> enemies;
 	public List<SpellEffect> spellEffects;
+	public List<Grave> graves;
 	
 	public Player player;
 	
@@ -209,6 +211,7 @@ public class Game {
 		factories = Collections.synchronizedList(new ArrayList<>());
 		enemies = Collections.synchronizedList(new ArrayList<>());
 		spellEffects = Collections.synchronizedList(new ArrayList<>());
+		graves = Collections.synchronizedList(new ArrayList<>());
 		
 		// Add a peasant farm.
 		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));
@@ -237,7 +240,7 @@ public class Game {
 				Game.time.update();
 				
 				// Update player information.
-				player.update();
+				player.update(this);
 				if(player.isAlive()) {
 					// Check for collisions with enemies.
 					synchronized(enemies) {
@@ -331,6 +334,23 @@ public class Game {
 							if(!e.isAlive()) {
 								player.addExperience(e.getExperience());
 								e.origin.enemyDeath();
+								graves.add(new Grave(new Point2D.Double(e.location.x, e.location.y)));
+								it.remove();
+								continue;
+							}
+						}
+					}
+				}
+				
+				// ...update... graves?
+				synchronized(graves) {
+					if(!graves.isEmpty()) {
+						Iterator<Grave> it = graves.iterator();
+						while(it.hasNext()) {
+							Grave g = it.next();
+							
+							g.update(this);
+							if(!g.isAlive()) {
 								it.remove();
 								continue;
 							}
@@ -362,6 +382,8 @@ public class Game {
 					spe.reset();
 				}
 				spellEffects.clear();
+				
+				graves.clear();
 				
 				// Add a peasant farm.
 				Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));

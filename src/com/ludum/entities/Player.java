@@ -11,6 +11,7 @@ import com.ludum.entities.spells.EldritchBolt;
 import com.ludum.entities.spells.Fireball;
 import com.ludum.entities.spells.LightningBolt;
 import com.ludum.entities.spells.Spell;
+import com.ludum.entities.spells.summons.SummonSkeleton;
 import com.ludum.entities.spells.summons.SummonZombie;
 
 public class Player {
@@ -103,6 +104,7 @@ public class Player {
 		spells.add(new Fireball());
 		spells.add(new LightningBolt());
 		spells.add(new SummonZombie());
+		spells.add(new SummonSkeleton());
 		
 		summonCap = Player.MAX_SUMMONS;
 		minions = new ArrayList<>();

@@ -22,6 +22,8 @@ public class Peasant extends Enemy {
 		if(isAlive()) {
 			// Basic enemy. Just travels toward the player.
 			double theta = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));
+			if(hasStatus("fear")) theta -= Math.PI;
+			
 			double dx = Math.cos(theta) * Peasant.SPEED;
 			double dy = Math.sin(theta) * Peasant.SPEED;
 			

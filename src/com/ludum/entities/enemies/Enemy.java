@@ -4,23 +4,46 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.Projectile;
+import com.ludum.entities.Status;
 import com.ludum.entities.minions.Minion;
 
 public class Enemy {
 	public EnemyFactory origin;
 	
 	protected String name;
+	public String getName() { return name; }
 	protected double health;
 	protected int experience;
 	protected double damage;
 	public double getDamage() { return damage; }
 	public Point2D.Double location;
+	protected Set<Status> statuses;
+	public void addStatus(Status status) { statuses.add(status); }
+	public void removeStatus(String name) { 
+		for(Status s : statuses) {
+			if(s.name == name) statuses.remove(s);
+		}
+	}
+	public boolean hasStatus(String name) {
+		for(Status s : statuses) {
+			if(s.name == name) return true;
+		}
+		return false;
+	}
+	public Status getStatus(String name) {
+		for(Status s : statuses) {
+			if(s.name == name) return s;
+		}
+		return null;
+	}
 	public List<Projectile> projectiles;
 	
 	public Enemy(EnemyFactory origin, String name, double health, int experience, double damage, Point2D.Double location) { // number one :)
@@ -30,6 +53,7 @@ public class Enemy {
 		this.experience = experience;
 		this.damage = damage;
 		this.location = new Point2D.Double(location.x, location.y);
+		this.statuses = new HashSet<>();
 		this.projectiles = Collections.synchronizedList(new ArrayList<>());
 	}
 	

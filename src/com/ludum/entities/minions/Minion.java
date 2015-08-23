@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
+import java.util.Random;
 
 import com.ludum.Game;
+import com.ludum.entities.Status;
 import com.ludum.entities.enemies.Enemy;
+import com.ludum.entities.spells.summons.SummonSkeleton;
 import com.ludum.gfx.Screen;
 
 public class Minion {
@@ -14,6 +17,8 @@ public class Minion {
 	
 	public Point2D.Double location;
 	
+	private String name;
+	public String getName() { return name; }
 	private double health;
 	public boolean isAlive() {
 		return (health > 0);
@@ -34,7 +39,8 @@ public class Minion {
 	private int summonCost;
 	public int getSummmonCost() { return summonCost; }
 	
-	public Minion(Point2D.Double location, double health, double damage, double speed, int summonCost) {
+	public Minion(String name, Point2D.Double location, double health, double damage, double speed, int summonCost) {
+		this.name = name;
 		this.location = location;
 		this.health = health;
 		this.damage = damage;
@@ -54,7 +60,13 @@ public class Minion {
 					
 					double dist = Screen.dist(location, e.location);
 					if(dist < Screen.dist(location, target.location)) target = e;
-					 
+					
+					if(name.equals("Skeleton") && e.getName().equals("Peasant") && 
+					   !e.hasStatus("fear") && (dist <= SummonSkeleton.FEAR_RADIUS)) {
+						Random r = new Random();
+						if((r.nextInt(100) + 1) <= SummonSkeleton.FEAR_CHANCE) e.addStatus(new Status("fear", 3000));
+					}
+					
 					if(e.isAlive() && (dist <= 20)) {
 						e.takeDamage(damage);
 					}

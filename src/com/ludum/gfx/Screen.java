@@ -62,8 +62,19 @@ public class Screen extends JPanel {
 		if(Game.state == GameState.MENU) {
 			menu.render(g2d);
 		} else if(Game.state == GameState.GAME_STARTED) {
-			g2d.setColor(new Color(0x336600));
-			g2d.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
+			if(Textures.GRASS.img != null) {
+				BufferedImage grass = Textures.GRASS.img;
+				int xR = (Game.WIDTH / grass.getWidth());
+				int yR = (Game.HEIGHT / grass.getHeight());
+				for(int row = 0; row < yR; row++) {
+					for(int col = 0; col < xR; col++) {
+						g2d.drawImage(grass, (col * grass.getWidth()), (row * grass.getHeight()), null);
+					}
+				}
+			} else {
+				g2d.setColor(new Color(0x336600));
+				g2d.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
+			}
 			
 			AlphaComposite savedComp = (AlphaComposite)g2d.getComposite();
 			

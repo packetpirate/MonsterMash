@@ -4,9 +4,12 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 import com.ludum.entities.Player;
+import com.ludum.gfx.Textures;
 
 public class HUD {
 	private Game game;
@@ -18,31 +21,33 @@ public class HUD {
 	public void render(Graphics2D g2d) {
 		{ // Draw the health and mana bars.
 			// Draw gray backdrop behind health and mana.
-			g2d.setColor(Color.GRAY);
-			g2d.fillRect(5, 5, 170, 76);
-			g2d.setColor(Color.WHITE);
-			g2d.drawRect(5, 5, 170, 76);
+			if(Textures.HUD1.img != null) {
+				g2d.drawImage(Textures.HUD1.img, 5, 5, null);
+			} else {
+				g2d.setColor(Color.GRAY);
+				g2d.fillRect(5, 5, 170, 76);
+				g2d.setColor(Color.WHITE);
+				g2d.drawRect(5, 5, 170, 76);
+			}
+			
 			
 			// Draw the health bar.
-			double hW = (game.player.currentHealth() / Player.MAX_HEALTH) * 150;
-			g2d.setColor(Color.BLACK);
-			g2d.fillRect(11, 11, 158, 19);
-			g2d.setColor(Color.RED);
-			g2d.fillRect(15, 15, (int)hW, 11);
+			double hW = (game.player.currentHealth() / Player.MAX_HEALTH) * 180;
+			RoundRectangle2D.Double health = new RoundRectangle2D.Double(15, 15, hW, 11, 8, 8);
+			g2d.setColor(new Color(0xC13333));
+			g2d.fill(health);
 			
 			// Draw the mana bar.
-			double mW = (game.player.currentMana() / Player.MAX_MANA) * 150;
-			g2d.setColor(Color.BLACK);
-			g2d.fillRect(11, 34, 158, 19);
-			g2d.setColor(Color.CYAN);
-			g2d.fillRect(15, 38, (int)mW, 11);
+			double mW = (game.player.currentMana() / Player.MAX_MANA) * 180;
+			RoundRectangle2D.Double mana = new RoundRectangle2D.Double(15, 40, mW, 11, 8, 8);
+			g2d.setColor(new Color(0x5C98BF));
+			g2d.fill(mana);
 			
 			// Draw the experience bar.
-			double eW = ((double)game.player.getExperience() / (double)game.player.getExperienceToLevel()) * 150;
-			g2d.setColor(Color.BLACK);
-			g2d.fillRect(11, 57, 158, 19);
-			g2d.setColor(Color.GREEN);
-			g2d.fillRect(15, 61, (int)eW, 11);
+			double eW = ((double)game.player.getExperience() / (double)game.player.getExperienceToLevel()) * 180;
+			RoundRectangle2D.Double exp = new RoundRectangle2D.Double(15, 65, eW, 11, 8, 8);
+			g2d.setColor(new Color(0xAAFFAA));
+			g2d.fill(exp);
 			
 			{ // Draw the spell slot bar.
 				int slotSize = 32;
@@ -59,7 +64,9 @@ public class HUD {
 				for(int i = 0; i < game.player.getSpells().size(); i++) {
 					Rectangle2D.Double rect = new Rectangle2D.Double((slotBarX + (i * 32) + (i * 4) + 4), (slotBarY + 4), 32, 32);
 					g2d.setColor(Color.BLACK);
-					g2d.fillRect((slotBarX + (i * 32) + (i * 4) + 4), (slotBarY + 4), 32, 32);
+					g2d.fill(rect);
+					
+					game.player.getSpells().get(i).renderIcon(g2d, new Point2D.Double(rect.x, rect.y));
 					
 					Stroke oldStroke = g2d.getStroke();
 					if(i == game.player.getSelectedSpell()) {
@@ -73,8 +80,8 @@ public class HUD {
 			} // End spell slot drawing.
 
 			g2d.setColor(Color.WHITE);
-			g2d.drawString(("Level: " + game.player.getLevel()), 5, 96);
-			g2d.drawString(("Current Spell: " + game.player.getCurrentSpell().getName()), 5, 111);
+			g2d.drawString(("Level: " + game.player.getLevel()), 5, 120);
+			g2d.drawString(("Current Spell: " + game.player.getCurrentSpell().getName()), 5, 135);
 		} // End drawing health and mana.
 	}
 }

@@ -11,6 +11,7 @@ import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.LightType;
 import com.ludum.entities.enemies.Enemy;
+import com.ludum.gfx.Textures;
 
 public class LightningBolt extends Spell {
 	private static final int MAX_JUMPS = 3;
@@ -32,6 +33,13 @@ public class LightningBolt extends Spell {
 			if(!LightningBolt.strikes.isEmpty() && (Game.time.getElapsedMillis() >= (LightningBolt.strikeTime + 1000))) {
 				LightningBolt.strikes.clear();
 			}
+		}
+	}
+	
+	@Override
+	public void renderIcon(Graphics2D g2d, Point2D.Double position) {
+		if(Textures.LIGHTNING_BOLT_ICON.img != null) {
+			g2d.drawImage(Textures.LIGHTNING_BOLT_ICON.img, (int)position.x, (int)position.y, null);
 		}
 	}
 	

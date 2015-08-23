@@ -1,5 +1,6 @@
 package com.ludum.entities.spells.summons;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
@@ -7,6 +8,7 @@ import com.ludum.Game;
 import com.ludum.entities.items.Grave;
 import com.ludum.entities.minions.Minion;
 import com.ludum.entities.spells.Spell;
+import com.ludum.gfx.Textures;
 
 public class SummonZombie extends Spell {
 	public SummonZombie() {
@@ -16,6 +18,13 @@ public class SummonZombie extends Spell {
 	@Override
 	public void update(Game game) {
 		
+	}
+	
+	@Override
+	public void renderIcon(Graphics2D g2d, Point2D.Double position) {
+		if(Textures.SUMMON_ZOMBIE_ICON.img != null) {
+			g2d.drawImage(Textures.SUMMON_ZOMBIE_ICON.img, (int)position.x, (int)position.y, null);
+		}
 	}
 	
 	@Override

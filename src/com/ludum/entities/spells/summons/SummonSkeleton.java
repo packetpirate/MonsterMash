@@ -1,5 +1,6 @@
 package com.ludum.entities.spells.summons;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
@@ -7,6 +8,7 @@ import com.ludum.Game;
 import com.ludum.entities.items.Grave;
 import com.ludum.entities.minions.Minion;
 import com.ludum.entities.spells.Spell;
+import com.ludum.gfx.Textures;
 
 public class SummonSkeleton extends Spell {
 	public static final int FEAR_RADIUS = 100;
@@ -21,6 +23,13 @@ public class SummonSkeleton extends Spell {
 	public void update(Game game) {
 		// TODO: Think of something unique for skeletons to do.
 		// Maybe because they're so spoopy, regular peasants flee from them?
+	}
+	
+	@Override
+	public void renderIcon(Graphics2D g2d, Point2D.Double position) {
+		if(Textures.SUMMON_SKELETON_ICON.img != null) {
+			g2d.drawImage(Textures.SUMMON_SKELETON_ICON.img, (int)position.x, (int)position.y, null);
+		}
 	}
 	
 	@Override

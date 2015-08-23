@@ -2,14 +2,23 @@ package com.ludum.entities.spells;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import com.ludum.Game;
 import com.ludum.entities.LightType;
+import com.ludum.gfx.Textures;
 
 public class EldritchBolt extends Spell {
 	public EldritchBolt() {
-		super("Eldritch Bolt", 50, 1, 5);
+		super("Eldritch Bolt", 200, 5, 10);
+	}
+	
+	@Override
+	public void renderIcon(Graphics2D g2d, Point2D.Double position) {
+		if(Textures.ELDRITCH_BOLT_ICON.img != null) {
+			g2d.drawImage(Textures.ELDRITCH_BOLT_ICON.img, (int)position.x, (int)position.y, null);
+		}
 	}
 	
 	@Override
@@ -38,8 +47,20 @@ public class EldritchBolt extends Spell {
 				
 				@Override
 				public void render(Graphics2D g2d) {
-					g2d.setColor(new Color(0x479D47));
-					g2d.fillOval((int)(location.x - 2), (int)(location.y - 2), 4, 4);
+					if(Textures.ELDRITCH_BOLT.img != null) {
+						AffineTransform saved = g2d.getTransform();
+						
+						int x = (int)(location.x - (Textures.ELDRITCH_BOLT.img.getWidth() / 2));
+						int y = (int)(location.y - (Textures.ELDRITCH_BOLT.img.getHeight() / 2));
+						AffineTransform rotate = AffineTransform.getRotateInstance((theta + (Math.PI / 2)), location.x, location.y);
+						g2d.setTransform(rotate);
+						g2d.drawImage(Textures.ELDRITCH_BOLT.img, x, y, null);
+						
+						g2d.setTransform(saved);
+					} else {
+						g2d.setColor(new Color(0x479D47));
+						g2d.fillOval((int)(location.x - 2), (int)(location.y - 2), 4, 4);
+					}
 				}
 			});
 			

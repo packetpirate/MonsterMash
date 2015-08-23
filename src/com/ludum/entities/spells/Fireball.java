@@ -2,6 +2,7 @@ package com.ludum.entities.spells;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
@@ -9,12 +10,20 @@ import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.LightType;
 import com.ludum.entities.enemies.Enemy;
+import com.ludum.gfx.Textures;
 
 public class Fireball extends Spell {
 	private static final int BLAST_RADIUS = 100;
 	
 	public Fireball() {
 		super("Fireball", 1500, 25, 50);
+	}
+	
+	@Override
+	public void renderIcon(Graphics2D g2d, Point2D.Double position) {
+		if(Textures.FIREBALL_ICON.img != null) {
+			g2d.drawImage(Textures.FIREBALL_ICON.img, (int)position.x, (int)position.y, null);
+		}
 	}
 	
 	@Override
@@ -87,8 +96,20 @@ public class Fireball extends Spell {
 				
 				@Override
 				public void render(Graphics2D g2d) {
-					g2d.setColor(Color.ORANGE);
-					g2d.fillOval((int)(location.x - 5), (int)(location.y - 5), 10, 10);
+					if(Textures.FIREBALL.img != null) {
+						AffineTransform saved = g2d.getTransform();
+						
+						int x = (int)(location.x - (Textures.FIREBALL.img.getWidth() / 2));
+						int y = (int)(location.y - (Textures.FIREBALL.img.getHeight() / 2));
+						AffineTransform rotate = AffineTransform.getRotateInstance((theta + (Math.PI / 2)), location.x, location.y);
+						g2d.setTransform(rotate);
+						g2d.drawImage(Textures.FIREBALL.img, x, y, null);
+						
+						g2d.setTransform(saved);
+					} else {
+						g2d.setColor(Color.ORANGE);
+						g2d.fillOval((int)(location.x - 5), (int)(location.y - 5), 10, 10);
+					}
 				}
 			});
 			

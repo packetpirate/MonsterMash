@@ -1,5 +1,8 @@
 package com.ludum.entities.spells;
 
+import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
+
 import com.ludum.Game;
 
 public class Spell {
@@ -21,6 +24,10 @@ public class Spell {
 	
 	public void update(Game game) {
 		
+	}
+	
+	public void renderIcon(Graphics2D g2d, Point2D.Double position) {
+		// Override this.
 	}
 	
 	public boolean canCast() {

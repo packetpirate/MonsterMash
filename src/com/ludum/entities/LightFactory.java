@@ -27,7 +27,7 @@ public class LightFactory {
 				while(it.hasNext()) {
 					Light light = it.next();
 					
-					if(!light.alive) {
+					if(!light.isAlive()) {
 						it.remove();
 						break;
 					}
@@ -43,7 +43,7 @@ public class LightFactory {
 				while(it.hasNext()) {
 					Light light = it.next();
 					
-					if(light.alive) light.render(overlay);
+					if(light.isAlive()) light.render(overlay);
 					else it.remove();
 					
 					continue;

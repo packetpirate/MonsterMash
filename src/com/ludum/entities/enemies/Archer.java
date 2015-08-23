@@ -20,7 +20,7 @@ public class Archer extends Enemy {
 	}
 	
 	public Archer(EnemyFactory origin, Point2D.Double spawnLocation) {
-		super(origin, "Archer", 80, 40, 3, spawnLocation);
+		super(origin, "Archer", 80, 20, 1, spawnLocation);
 		
 		lastFire = Game.time.getElapsedMillis();
 	}
@@ -29,24 +29,26 @@ public class Archer extends Enemy {
 	public void update(Game game) {
 		super.update(game);
 		
-		// Moves within firing range of player and shoots.
-		double theta = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));
-		double dx = Math.cos(theta) * Archer.SPEED;
-		double dy = Math.sin(theta) * Archer.SPEED;
-		
-		double a = (location.x - game.player.location.x);
-		double b = (location.y - game.player.location.y);
-		double dist = Math.sqrt((a * a) + (b * b));
-		
-		if(dist > Archer.MIN_DISTANCE) {
-			location.x += dx;
-			location.y += dy;
-		}
-		
-		if((dist <= Archer.FIRING_RANGE) && canFire()) {
-			double ang = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));
-			projectiles.add(new Projectile(new Point2D.Double(location.x, location.y), 5, ang, 5));
-			lastFire = Game.time.getElapsedMillis();
+		if(isAlive()) {
+			// Moves within firing range of player and shoots.
+			double theta = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));
+			double dx = Math.cos(theta) * Archer.SPEED;
+			double dy = Math.sin(theta) * Archer.SPEED;
+			
+			double a = (location.x - game.player.location.x);
+			double b = (location.y - game.player.location.y);
+			double dist = Math.sqrt((a * a) + (b * b));
+			
+			if(dist > Archer.MIN_DISTANCE) {
+				location.x += dx;
+				location.y += dy;
+			}
+			
+			if((dist <= Archer.FIRING_RANGE) && canFire()) {
+				double ang = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));
+				projectiles.add(new Projectile(new Point2D.Double(location.x, location.y), 5, ang, 5));
+				lastFire = Game.time.getElapsedMillis();
+			}
 		}
 	}
 	

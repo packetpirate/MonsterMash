@@ -290,7 +290,7 @@ public class Game {
 						if((effect.location.x < 0) || (effect.location.x > Game.WIDTH) ||
 						   (effect.location.y < 0) || (effect.location.y > Game.HEIGHT) ||
 						   (!effect.alive)) {
-							effect.light.alive = false;
+							effect.light.killLight();
 							it.remove();
 							continue;
 						}
@@ -305,7 +305,7 @@ public class Game {
 						EnemyFactory factory = it.next();
 						
 						if(!factory.isAlive()) {
-							factory.getLight().alive = false;
+							factory.getLight().killLight();
 						}
 						
 						if(factory.canSpawn()) {

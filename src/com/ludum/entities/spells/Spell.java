@@ -19,6 +19,10 @@ public class Spell {
 		this.damage = damage;
 	}
 	
+	public void update() {
+		
+	}
+	
 	public boolean canCast() {
 		return (Game.time.getElapsedMillis() >= (lastCast + cooldown));
 	}

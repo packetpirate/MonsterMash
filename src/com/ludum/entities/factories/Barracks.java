@@ -14,6 +14,7 @@ public class Barracks extends EnemyFactory {
 				new Point2D.Double((position.x - 20), (position.y + 30)));
 		
 		addEnemyType(EnemyType.ARCHER);
+		addEnemyType(EnemyType.SOLDIER);
 	}
 	
 	@Override

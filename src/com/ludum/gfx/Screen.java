@@ -1,6 +1,7 @@
 package com.ludum.gfx;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -8,10 +9,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
@@ -23,6 +20,7 @@ import com.ludum.HUD;
 import com.ludum.Menu;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.enemies.Enemy;
+import com.ludum.entities.spells.LightningBolt;
 import com.ludum.entities.spells.SpellEffect;
 
 public class Screen extends JPanel {
@@ -69,6 +67,18 @@ public class Screen extends JPanel {
 					if(effect.alive) effect.render(g2d);
 				}
 			}
+			// TODO: Figure out a better way to handle this.
+			// Specific: Draw lightning bolt strikes.
+			if(LightningBolt.strikes.size() > 1) {
+				g2d.setColor(new Color(0xE6FFFF));
+				g2d.setStroke(new BasicStroke(3.0f));
+				for(int i = 0; i < (LightningBolt.strikes.size() - 1); i++) {
+					Point2D.Double strike1 = LightningBolt.strikes.get(i);
+					Point2D.Double strike2 = LightningBolt.strikes.get(i + 1);
+					g2d.drawLine((int)strike1.x, (int)strike1.y, (int)strike2.x, (int)strike2.y);
+				}
+			}
+			// End drawing lightning bolt strikes.
 			
 			synchronized(game.factories) {
 				for(EnemyFactory factory : game.factories) {
@@ -109,6 +119,8 @@ public class Screen extends JPanel {
 				g2d.setFont(font);
 				g2d.drawString(str, ((Game.WIDTH / 2) - (w / 2)), ((Game.HEIGHT / 2) - (h / 2)));
 			}
+		} else if(Game.state == GameState.GAME_OVER) {
+			// TODO: Draw game over screen.
 		}
 	}
 	

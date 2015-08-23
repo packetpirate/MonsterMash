@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ludum.Game;
-import com.ludum.entities.spells.Fireball;
 import com.ludum.entities.spells.EldritchBolt;
+import com.ludum.entities.spells.Fireball;
+import com.ludum.entities.spells.LightningBolt;
 import com.ludum.entities.spells.Spell;
 
 public class Player {
@@ -86,6 +87,7 @@ public class Player {
 		selectedSpell = 0;
 		spells.add(new EldritchBolt());
 		spells.add(new Fireball());
+		spells.add(new LightningBolt());
 		
 		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
 		light = LightType.createLight(location, LightType.PLAYER);
@@ -95,6 +97,10 @@ public class Player {
 	public void update() {
 		mana += MANA_REGEN_RATE;
 		if(mana >= MAX_MANA) mana = MAX_MANA;
+		
+		for(Spell sp : spells) {
+			sp.update();
+		}
 	}
 	
 	public void move(double dx, double dy) {

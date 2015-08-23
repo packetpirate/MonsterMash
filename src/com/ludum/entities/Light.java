@@ -1,7 +1,6 @@
 package com.ludum.entities;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
@@ -15,16 +14,24 @@ public class Light {
 	public int minRadius;
 	public int brightness;
 	public Color color;
+	public long creation;
+	public long duration; // Duration of -1 = permanent
 	public boolean flicker;
-	public boolean alive;
+	private boolean alive;
+	public void killLight() { alive = false; }
+	public boolean isAlive() {
+		return (alive && ((duration == -1) || (Game.time.getElapsedMillis() < (creation + duration))));
+	}
 	
-	public Light(Point2D.Double location, int radius, int brightness, Color color) {
+	public Light(Point2D.Double location, int radius, int brightness, Color color, long duration) {
 		this.location = location;
 		this.radius = radius;
 		this.maxRadius = radius;
 		this.minRadius = radius;
 		this.brightness = brightness;
 		this.color = color;
+		this.creation = Game.time.getElapsedMillis();
+		this.duration = duration;
 		this.flicker = false;
 		this.alive = true;
 		
@@ -33,8 +40,8 @@ public class Light {
 		}
 	}
 	
-	public Light(Point2D.Double location, int radius, int brightness, Color color, boolean flicker, int flickerVariance) {
-		this(location, radius, brightness, color);
+	public Light(Point2D.Double location, int radius, int brightness, Color color, boolean flicker, int flickerVariance, long duration) {
+		this(location, radius, brightness, color, duration);
 		
 		this.flicker = flicker;
 		this.maxRadius = radius + flickerVariance;

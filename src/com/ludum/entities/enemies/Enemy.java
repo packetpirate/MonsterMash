@@ -94,20 +94,8 @@ public class Enemy {
 		}
 	}
 	
-	public void render(Graphics2D g2d) {
-		synchronized(projectiles) {
-			if(!projectiles.isEmpty()) {
-				Iterator<Projectile> it = projectiles.iterator();
-				while(it.hasNext()) {
-					Projectile p = it.next();
-					
-					if(p.alive) {
-						p.render(g2d);
-						continue;
-					}
-				}
-			}
-		}
+	public void render(Graphics2D g2d, Game game) {
+		
 	}
 	
 	public boolean isAlive() {

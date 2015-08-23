@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 
 import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
+import com.ludum.gfx.Textures;
 
 // Most basic enemy unit.
 public class Peasant extends Enemy {
@@ -33,8 +34,25 @@ public class Peasant extends Enemy {
 	}
 	
 	@Override
-	public void render(Graphics2D g2d) {
-		g2d.setColor(Color.GRAY);
-		g2d.fillOval((int)(location.x - 10), (int)(location.y - 10), 20, 20);
+	public void render(Graphics2D g2d, Game game) {
+		if(Textures.PEASANT.img != null) {
+			int x = (int)(location.x - (Textures.PEASANT.img.getWidth() / 2));
+			int y = (int)(location.y - (Textures.PEASANT.img.getHeight() / 2));
+
+			// Determine which way the archer should face.
+			if(game.player.location.x >= location.x) {
+				// Face to the right. (flip the image)
+				g2d.drawImage(Textures.PEASANT.img, 
+							  (x + Textures.PEASANT.img.getWidth()), y,
+							  -Textures.PEASANT.img.getWidth(),
+							  Textures.PEASANT.img.getHeight(), null);
+			} else {
+				// Face to the left. (just draw normally)
+				g2d.drawImage(Textures.PEASANT.img, x, y, null);
+			}
+		} else {
+			g2d.setColor(Color.GRAY);
+			g2d.fillOval((int)(location.x - 10), (int)(location.y - 10), 20, 20);
+		}
 	}
 }

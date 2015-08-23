@@ -3,10 +3,12 @@ package com.ludum.entities.enemies;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
 import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.Projectile;
+import com.ludum.gfx.Textures;
 
 public class Archer extends Enemy {
 	public static final int SPEED = 1;
@@ -53,10 +55,39 @@ public class Archer extends Enemy {
 	}
 	
 	@Override
-	public void render(Graphics2D g2d) {
-		super.render(g2d);
+	public void render(Graphics2D g2d, Game game) {
+		synchronized(projectiles) {
+			if(!projectiles.isEmpty()) {
+				Iterator<Projectile> it = projectiles.iterator();
+				while(it.hasNext()) {
+					Projectile p = it.next();
+					
+					if(p.alive) {
+						p.render(g2d);
+						continue;
+					}
+				}
+			}
+		}
 		
-		g2d.setColor(Color.YELLOW);
-		g2d.fillOval((int)(location.x - 10), (int)(location.y - 10), 20, 20);
+		if(Textures.ARCHER.img != null) {
+			int x = (int)(location.x - (Textures.SOLDIER.img.getWidth() / 2));
+			int y = (int)(location.y - (Textures.SOLDIER.img.getHeight() / 2));
+
+			// Determine which way the archer should face.
+			if(game.player.location.x >= location.x) {
+				// Face to the right. (flip the image)
+				g2d.drawImage(Textures.ARCHER.img, 
+							  (x + Textures.ARCHER.img.getWidth()), y,
+							  -Textures.ARCHER.img.getWidth(),
+							  Textures.ARCHER.img.getHeight(), null);
+			} else {
+				// Face to the left. (just draw normally)
+				g2d.drawImage(Textures.ARCHER.img, x, y, null);
+			}
+		} else {
+			g2d.setColor(Color.YELLOW);
+			g2d.fillOval((int)(location.x - 10), (int)(location.y - 10), 20, 20);
+		}
 	}
 }

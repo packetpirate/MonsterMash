@@ -110,7 +110,7 @@ public class Screen extends JPanel {
 			
 			synchronized(game.enemies) {
 				for(Enemy enemy : game.enemies) {
-					if(enemy.isAlive()) enemy.render(g2d);
+					if(enemy.isAlive()) enemy.render(g2d, game);
 				}
 			}
 			

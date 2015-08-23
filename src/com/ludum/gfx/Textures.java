@@ -12,6 +12,10 @@ public enum Textures {
 	
 	NECROMANCER(Textures.loadImage("/images/necromancer.png")),
 	
+	PEASANT(Textures.loadImage("/images/peasant.png")),
+	SOLDIER(Textures.loadImage("/images/soldier.png")),
+	ARCHER(Textures.loadImage("/images/archer.png")),
+	
 	ELDRITCH_BOLT(Textures.loadImage("/images/eldritch_bolt.png")),
 	ELDRITCH_BOLT_ICON(Textures.loadImage("/images/eldritch_bolt_icon.png")),
 	FIREBALL(Textures.loadImage("/images/fireball.png")),

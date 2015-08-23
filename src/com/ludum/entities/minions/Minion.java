@@ -80,6 +80,18 @@ public class Minion {
 				
 				location.x += dx;
 				location.y += dy;
+			} else {
+				// Make them follow the player if there are no enemies on screen.
+				double dist = Screen.dist(location, game.player.location);
+				if(dist > 100) {
+					double theta = Math.atan2((game.player.location.y - location.y), 
+											  (game.player.location.x - location.x));
+					double dx = Math.cos(theta) * speed;
+					double dy = Math.sin(theta) * speed;
+					
+					location.x += dx;
+					location.y += dy;
+				}
 			}
 		}
 	}

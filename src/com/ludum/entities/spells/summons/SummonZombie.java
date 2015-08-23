@@ -12,7 +12,7 @@ import com.ludum.gfx.Textures;
 
 public class SummonZombie extends Spell {
 	public SummonZombie() {
-		super("Summon Zombie", 3000, 10, 0);
+		super("Summon Zombie", 2000, 10, 0);
 	}
 	
 	@Override
@@ -39,7 +39,16 @@ public class SummonZombie extends Spell {
 						if(g.isAlive()) {
 							if(canCast() && g.contains(new Point2D.Double(game.screen.mousePos.x, 
 															 			  game.screen.mousePos.y))) {
-								Minion zombie = new Minion("Zombie", new Point2D.Double(g.location.x, g.location.y), 60, 1, 1, 1);
+								Minion zombie = new Minion("Zombie", new Point2D.Double(g.location.x, g.location.y), 60, 1, 1, 1) {
+									@Override
+									public void render(Graphics2D g2d) {
+										if(Textures.ZOMBIE.img != null) {
+											int x = (int)(location.x - (Textures.ZOMBIE.img.getWidth() / 2));
+											int y = (int)(location.y - (Textures.ZOMBIE.img.getHeight() / 2));
+											g2d.drawImage(Textures.ZOMBIE.img, x, y, null);
+										}
+									}
+								};
 								game.player.summon(zombie);
 								game.player.useMana(manaCost);
 								lastCast = Game.time.getElapsedMillis();

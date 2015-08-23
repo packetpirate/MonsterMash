@@ -120,8 +120,7 @@ public class Screen extends JPanel {
 				}
 			}
 			
-			g2d.setColor(Color.RED);
-			g2d.fillOval((int)(game.player.location.x - 10), (int)(game.player.location.y - 10), 20, 20);
+			game.player.render(g2d);
 			
 			// Draw lights in the light factory.
 			BufferedImage overlay = new BufferedImage(Game.WIDTH, Game.HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -130,7 +129,7 @@ public class Screen extends JPanel {
 			og2d.clearRect(0, 0, Game.WIDTH, Game.HEIGHT);
 			game.lightFactory.render(overlay);
 			
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f));
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
 			g2d.drawImage(overlay, 0, 0, null);
 			g2d.setComposite(savedComp);
 			

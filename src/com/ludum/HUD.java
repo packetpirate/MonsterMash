@@ -82,6 +82,7 @@ public class HUD {
 			g2d.setColor(Color.WHITE);
 			g2d.drawString(("Level: " + game.player.getLevel()), 5, 120);
 			g2d.drawString(("Current Spell: " + game.player.getCurrentSpell().getName()), 5, 135);
+			g2d.drawString(("Summon Points: " + game.player.getSummonPoints()), 5, 150);
 		} // End drawing health and mana.
 	}
 }

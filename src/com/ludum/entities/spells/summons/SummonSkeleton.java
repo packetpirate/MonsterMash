@@ -46,7 +46,16 @@ public class SummonSkeleton extends Spell {
 															 			  game.screen.mousePos.y))) {
 								// TODO: Nerf health and damage. 2spooky4me
 								Minion skeleton = new Minion("Skeleton", new Point2D.Double(g.location.x, g.location.y), 
-														   200, 3, 3, 3);
+														   200, 3, 3, 3) {
+									@Override
+									public void render(Graphics2D g2d) {
+										if(Textures.SKELETON.img != null) {
+											int x = (int)(location.x - (Textures.SKELETON.img.getWidth() / 2));
+											int y = (int)(location.y - (Textures.SKELETON.img.getHeight() / 2));
+											g2d.drawImage(Textures.SKELETON.img, x, y, null);
+										}
+									}
+								};
 								game.player.summon(skeleton);
 								game.player.useMana(manaCost);
 								lastCast = Game.time.getElapsedMillis();

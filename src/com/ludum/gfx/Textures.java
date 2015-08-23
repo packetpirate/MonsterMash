@@ -10,13 +10,18 @@ public enum Textures {
 	GRAVE(Textures.loadImage("/images/grave.png")),
 	HUD1(Textures.loadImage("/images/hud1.png")),
 	
+	NECROMANCER(Textures.loadImage("/images/necromancer.png")),
+	
 	ELDRITCH_BOLT(Textures.loadImage("/images/eldritch_bolt.png")),
 	ELDRITCH_BOLT_ICON(Textures.loadImage("/images/eldritch_bolt_icon.png")),
 	FIREBALL(Textures.loadImage("/images/fireball.png")),
 	FIREBALL_ICON(Textures.loadImage("/images/fireball_icon.png")),
 	LIGHTNING_BOLT_ICON(Textures.loadImage("/images/lightning_bolt_icon.png")),
 	SUMMON_ZOMBIE_ICON(Textures.loadImage("/images/summon_zombie_icon.png")),
-	SUMMON_SKELETON_ICON(Textures.loadImage("/images/summon_skeleton_icon.png"));
+	SUMMON_SKELETON_ICON(Textures.loadImage("/images/summon_skeleton_icon.png")),
+	
+	ZOMBIE(Textures.loadImage("/images/zombie.png")),
+	SKELETON(Textures.loadImage("/images/skeleton.png"));
 	
 	public BufferedImage img;
 	

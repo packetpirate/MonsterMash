@@ -1,5 +1,6 @@
 package com.ludum.entities;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import com.ludum.entities.spells.LightningBolt;
 import com.ludum.entities.spells.Spell;
 import com.ludum.entities.spells.summons.SummonSkeleton;
 import com.ludum.entities.spells.summons.SummonZombie;
+import com.ludum.gfx.Textures;
 
 public class Player {
 	private final long INVINCIBILITY_TIME = 100;
@@ -79,6 +81,7 @@ public class Player {
 	}
 	
 	private int summonCap;
+	public int getSummonPoints() { return summonCap; }
 	private List<Minion> minions;
 	public List<Minion> getMinions() { return minions; }
 	public void summon(Minion minion) {
@@ -152,6 +155,14 @@ public class Player {
 					}
 				}
 			}
+		}
+	}
+	
+	public void render(Graphics2D g2d) {
+		if(Textures.NECROMANCER.img != null) {
+			int x = (int)(location.x - (Textures.NECROMANCER.img.getWidth() / 2));
+			int y = (int)(location.y - (Textures.NECROMANCER.img.getHeight() / 2));
+			g2d.drawImage(Textures.NECROMANCER.img, x, y, null);
 		}
 	}
 	

@@ -63,7 +63,7 @@ public class Archer extends Enemy {
 			
 			if((dist <= Archer.FIRING_RANGE) && canFire()) {
 				double ang = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));
-				projectiles.add(new Projectile(new Point2D.Double(location.x, location.y), 5, ang, 5));
+				projectiles.add(new Projectile(new Point2D.Double(location.x, location.y), 20, ang, 5));
 				lastFire = Game.time.getElapsedMillis();
 			}
 		}

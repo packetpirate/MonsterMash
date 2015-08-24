@@ -2,10 +2,12 @@ package com.ludum.entities;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import com.ludum.Game;
 import com.ludum.gfx.Screen;
+import com.ludum.gfx.Textures;
 
 public class Projectile {
 	private Point2D.Double location;
@@ -50,8 +52,18 @@ public class Projectile {
 	
 	public void render(Graphics2D g2d) {
 		if(alive) {
-			g2d.setColor(Color.YELLOW);
-			g2d.fillOval((int)(location.x - 2), (int)(location.y - 2), 4, 4);
+			if(Textures.ARROW.img != null) {
+				int x = (int)(location.x - (Textures.ARROW.img.getWidth() / 2));
+				int y = (int)(location.y - (Textures.ARROW.img.getHeight() / 2));
+				AffineTransform saved = g2d.getTransform();
+				g2d.setTransform(AffineTransform.getRotateInstance((theta + (Math.PI / 2)), location.x, location.y));
+				g2d.drawImage(Textures.ARROW.img, x, y, null);
+				
+				g2d.setTransform(saved);
+			} else {
+				g2d.setColor(Color.YELLOW);
+				g2d.fillOval((int)(location.x - 2), (int)(location.y - 2), 4, 4);
+			}
 		}
 	}
 }

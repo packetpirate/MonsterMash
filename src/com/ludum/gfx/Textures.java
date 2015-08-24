@@ -15,6 +15,7 @@ public enum Textures {
 	PEASANT(Textures.loadImage("/images/peasant.png")),
 	SOLDIER(Textures.loadImage("/images/soldier.png")),
 	ARCHER(Textures.loadImage("/images/archer.png")),
+	ARROW(Textures.loadImage("/images/arrow.png")),
 	CLERIC(Textures.loadImage("/images/cleric.png")),
 	
 	FARM(Textures.loadImage("/images/farm.png")),

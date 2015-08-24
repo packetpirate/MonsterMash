@@ -14,10 +14,18 @@ import com.ludum.gfx.Textures;
 public class Cleric extends Enemy {
 	public static final int SPEED = 2;
 	public static final int BANISH_RANGE = 200;
-	public static final int BANISH_DAMAGE = 20;
+	public static final int BANISH_DAMAGE = 100;
+	public static final long BANISH_COOLDOWN = 3000;
+	
+	private long lastBanish;
+	public boolean canBanish() {
+		return (Game.time.getElapsedMillis() >= (lastBanish + Cleric.BANISH_COOLDOWN));
+	}
 	
 	public Cleric(EnemyFactory origin, Point2D.Double spawnLocation) {
-		super(origin, "Cleric", 150, 100, 1, spawnLocation);
+		super(origin, "Cleric", 150, 100, 5, spawnLocation);
+		
+		lastBanish = Game.time.getElapsedMillis();
 	}
 	
 	@Override
@@ -27,6 +35,7 @@ public class Cleric extends Enemy {
 			synchronized(game.player.getMinions()) {
 				if(!game.player.getMinions().isEmpty()) {
 					boolean damageDone = false;
+					Minion target = game.player.getMinions().get(0);
 					Iterator<Minion> it = game.player.getMinions().iterator();
 					while(it.hasNext()) {
 						Minion m = it.next();
@@ -34,30 +43,38 @@ public class Cleric extends Enemy {
 						double dist = Screen.dist(location, m.location);
 						if(m.isAlive()) {
 							if(m.canTakeDamage()) {
-								if(!damageDone && dist <= Cleric.BANISH_RANGE) {
+								if(!damageDone && canBanish() && (dist <= Cleric.BANISH_RANGE)) {
 									m.takeDamage(Cleric.BANISH_DAMAGE);
+									lastBanish = Game.time.getElapsedMillis();
 									damageDone = true;
 								} else if(dist <= 20) {
 									m.takeDamage(damage);
 								}
 							}
 							
-							if(dist > Cleric.BANISH_RANGE) {
-								double theta = Math.atan2((m.location.y - location.y), 
-														  (m.location.x - location.x));
-								double dx = Math.cos(theta) * Cleric.SPEED;
-								double dy = Math.cos(theta) * Cleric.SPEED;
-								
-								location.x += dx;
-								location.y += dy;
+							// If this target is closer to the cleric, set it as the new target.
+							if(dist < Screen.dist(location, target.location)) {
+								target = m;
 							}
+							
+							
 						}
+					}
+					
+					if(Screen.dist(location, target.location) > Cleric.BANISH_RANGE) {
+						double theta = Math.atan2((target.location.y - location.y), 
+												  (target.location.x - location.x));
+						double dx = Math.cos(theta) * Cleric.SPEED;
+						double dy = Math.sin(theta) * Cleric.SPEED;
+						
+						location.x += dx;
+						location.y += dy;
 					}
 				} else {
 					double theta = Math.atan2((game.player.location.y - location.y), 
 											  (game.player.location.x - location.x));
 					double dx = Math.cos(theta) * Cleric.SPEED;
-					double dy = Math.cos(theta) * Cleric.SPEED;
+					double dy = Math.sin(theta) * Cleric.SPEED;
 					
 					location.x += dx;
 					location.y += dy;

@@ -19,6 +19,7 @@ public enum Textures {
 	
 	FARM(Textures.loadImage("/images/farm.png")),
 	BARRACKS(Textures.loadImage("/images/barracks.png")),
+	CHAPEL(Textures.loadImage("/images/chapel.png")),
 	
 	ELDRITCH_BOLT(Textures.loadImage("/images/eldritch_bolt.png")),
 	ELDRITCH_BOLT_ICON(Textures.loadImage("/images/eldritch_bolt_icon.png")),

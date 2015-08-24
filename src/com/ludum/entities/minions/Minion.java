@@ -13,7 +13,7 @@ import com.ludum.entities.spells.summons.SummonSkeleton;
 import com.ludum.gfx.Screen;
 
 public class Minion {
-	private static final long INVINCIBILITY_TIME = 100;
+	private static final long INVINCIBILITY_TIME = 1000;
 	
 	public Point2D.Double location;
 	

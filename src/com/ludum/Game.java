@@ -17,6 +17,7 @@ import com.ludum.entities.LightType;
 import com.ludum.entities.Player;
 import com.ludum.entities.enemies.Enemy;
 import com.ludum.entities.factories.Barracks;
+import com.ludum.entities.factories.Chapel;
 import com.ludum.entities.factories.Farm;
 import com.ludum.entities.items.Grave;
 import com.ludum.entities.spells.SpellEffect;
@@ -215,7 +216,7 @@ public class Game {
 		graves = Collections.synchronizedList(new ArrayList<>());
 		messages = Collections.synchronizedList(new ArrayList<>());
 		
-		// Add a peasant farm.
+		// Add a farm.
 		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 128), 128));
 		farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
 		factories.add(farm);
@@ -224,6 +225,11 @@ public class Game {
 		Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 128), (Game.HEIGHT - 128)));
 		barracks.addLight(lightFactory.createLight(barracks.getSpawnLocation(), LightType.TORCH));
 		factories.add(barracks);
+		
+		// Add a chapel.
+		Chapel chapel = new Chapel(new Point2D.Double(64, (Game.HEIGHT - 64)));
+		chapel.addLight(lightFactory.createLight(chapel.getSpawnLocation(), LightType.TORCH));
+		factories.add(chapel);
 		
 		player = new Player(this);
 		
@@ -400,15 +406,20 @@ public class Game {
 				graves.clear();
 				messages.clear();
 				
-				// Add a peasant farm.
-				Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 128), 128));
+				// Add a farm.
+				Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 64), 128));
 				farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
 				factories.add(farm);
 				
 				// Add a barracks.
-				Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 128), (Game.HEIGHT - 128)));
+				Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 64), (Game.HEIGHT - 64)));
 				barracks.addLight(lightFactory.createLight(barracks.getSpawnLocation(), LightType.TORCH));
 				factories.add(barracks);
+				
+				// Add a chapel.
+				Chapel chapel = new Chapel(new Point2D.Double(64, (Game.HEIGHT - 64)));
+				chapel.addLight(lightFactory.createLight(chapel.getSpawnLocation(), LightType.TORCH));
+				factories.add(chapel);
 				
 				player.resetPlayer(this);
 				reset = true;

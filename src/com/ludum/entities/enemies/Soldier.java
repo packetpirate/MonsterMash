@@ -12,7 +12,7 @@ public class Soldier extends Enemy{
 	public static final int SPEED = 2;
 	
 	public Soldier(EnemyFactory origin, Point2D.Double spawnLocation) {
-		super(origin, "Soldier", 150, 50, 3, spawnLocation);
+		super(origin, "Soldier", 150, 50, 15, spawnLocation);
 	}
 	
 	@Override
@@ -20,7 +20,6 @@ public class Soldier extends Enemy{
 		super.update(game);
 		
 		if(isAlive()) {
-			// Moves within firing range of player and shoots.
 			double theta = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));
 			double dx = Math.cos(theta) * Soldier.SPEED;
 			double dy = Math.sin(theta) * Soldier.SPEED;

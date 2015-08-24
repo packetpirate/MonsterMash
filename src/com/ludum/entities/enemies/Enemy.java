@@ -5,7 +5,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -13,8 +12,6 @@ import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.Projectile;
 import com.ludum.entities.Status;
-import com.ludum.entities.minions.Minion;
-import com.ludum.gfx.Screen;
 
 public class Enemy {
 	public EnemyFactory origin;
@@ -63,19 +60,19 @@ public class Enemy {
 	}
 	
 	public void update(Game game) {
-		synchronized(game.player.getMinions()) {
-			if(!game.player.getMinions().isEmpty()) {
-				Iterator<Minion> it = game.player.getMinions().iterator();
-				while(it.hasNext()) {
-					Minion m = it.next();
-					
-					double dist = Screen.dist(location, m.location);
-					if(m.isAlive() && m.canTakeDamage() && (dist <= 20)) {
-						m.takeDamage(damage);
-					}
-				}
-			}
-		}
+//		synchronized(game.player.getMinions()) {
+//			if(!game.player.getMinions().isEmpty()) {
+//				Iterator<Minion> it = game.player.getMinions().iterator();
+//				while(it.hasNext()) {
+//					Minion m = it.next();
+//					
+//					double dist = Screen.dist(location, m.location);
+//					if(m.isAlive() && m.canTakeDamage() && (dist <= 20)) {
+//						m.takeDamage(damage);
+//					}
+//				}
+//			}
+//		}
 	}
 	
 	public void render(Graphics2D g2d, Game game) {

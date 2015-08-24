@@ -22,7 +22,7 @@ public class Archer extends Enemy {
 	}
 	
 	public Archer(EnemyFactory origin, Point2D.Double spawnLocation) {
-		super(origin, "Archer", 80, 20, 1, spawnLocation);
+		super(origin, "Archer", 80, 20, 20, spawnLocation);
 		
 		lastFire = Game.time.getElapsedMillis();
 	}

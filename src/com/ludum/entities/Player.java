@@ -21,8 +21,8 @@ import com.ludum.entities.spells.summons.SummonZombie;
 import com.ludum.gfx.Textures;
 
 public class Player {
-	private final long INVINCIBILITY_TIME = 100;
-	private final double MANA_REGEN_RATE = 0.5;
+	private final long INVINCIBILITY_TIME = 1000;
+	private final double MANA_REGEN_RATE = 0.5; // set back to 0.5 when not testing
 	
 	public static double MAX_HEALTH = 100;
 	public static double MAX_MANA = 100;

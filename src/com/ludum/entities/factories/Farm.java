@@ -19,9 +19,9 @@ public class Farm extends EnemyFactory {
 	
 	@Override
 	public void render(Graphics2D g2d) {
-		int hW = (int)((health / maxHealth) * 82);
 		Dimension size = new Dimension(Textures.FARM.img.getWidth(),
 									   Textures.FARM.img.getHeight());
+		int hW = (int)((health / maxHealth) * (size.width - 4));
 		
 		if(Textures.FARM.img != null) {
 			int x = (int)(position.x - (size.width / 2));
@@ -30,8 +30,13 @@ public class Farm extends EnemyFactory {
 		}
 		
 		// Draw a "health" bar.
-		g2d.fillRect((int)(position.x - ((size.width / 2) - 5)), (int)(position.y - ((size.width / 2) - 5)), 90, 20);
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect((int)(position.x - (size.width / 2)), 
+					 (int)(position.y - (size.height / 2) - 16), 
+					 size.width, 16);
 		g2d.setColor(Color.RED);
-		g2d.fillRect((int)(position.x - ((size.width / 2) - 9)), (int)(position.y - ((size.width / 2) - 9)), hW, 12);
+		g2d.fillRect((int)(position.x - (size.width / 2) + 2), 
+					 (int)(position.y - (size.height / 2) - 14), 
+					 hW, 12);
 	}
 }

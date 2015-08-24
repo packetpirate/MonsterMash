@@ -7,30 +7,38 @@ import java.awt.geom.Point2D;
 
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.enemies.EnemyType;
+import com.ludum.gfx.Textures;
 
 public class Barracks extends EnemyFactory {
 	public Barracks(Point2D.Double position) {
 		super("Barracks", 1000, 4000, 5, position, 
-				new Point2D.Double((position.x - 20), (position.y + 30)));
+				new Point2D.Double(position.x, (position.y + 40)));
 		
 		addEnemyType(EnemyType.ARCHER);
 		addEnemyType(EnemyType.SOLDIER);
-		addEnemyType(EnemyType.CLERIC);
+//		addEnemyType(EnemyType.CLERIC);
 	}
 	
 	@Override
 	public void render(Graphics2D g2d) {
-		g2d.setColor(Color.GRAY);
-		g2d.fillRect((int)(position.x - 50), (int)(position.y - 50), 100, 100);
+		Dimension size = new Dimension(Textures.BARRACKS.img.getWidth(),
+									   Textures.BARRACKS.img.getHeight());
+		int hW = (int)((health / maxHealth) * (size.width - 4));
 		
-		g2d.setColor(Color.BLACK);
-		g2d.fillRect((int)(spawn.x - 20), (int)(spawn.y - 20), 40, 40);
+		if(Textures.BARRACKS.img != null) {
+			int x = (int)(position.x - (size.width / 2));
+			int y = (int)(position.y - (size.height / 2));
+			g2d.drawImage(Textures.BARRACKS.img, x, y, null);
+		}
 		
 		// Draw a "health" bar.
-		int hW = (int)((health / maxHealth) * 82);
-		Dimension size = new Dimension(100, 100);
-		g2d.fillRect((int)(position.x - ((size.width / 2) - 5)), (int)(position.y - ((size.width / 2) - 5)), 90, 20);
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect((int)(position.x - (size.width / 2)), 
+					 (int)(position.y - (size.height / 2) - 16), 
+					 size.width, 16);
 		g2d.setColor(Color.RED);
-		g2d.fillRect((int)(position.x - ((size.width / 2) - 9)), (int)(position.y - ((size.width / 2) - 9)), hW, 12);
+		g2d.fillRect((int)(position.x - (size.width / 2) + 2), 
+					 (int)(position.y - (size.height / 2) - 14), 
+					 hW, 12);
 	}
 }

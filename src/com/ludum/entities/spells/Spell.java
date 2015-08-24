@@ -8,7 +8,9 @@ import com.ludum.Game;
 public class Spell {
 	public String getName() { return ""; }
 	protected long lastCast;
+	public long getLastCast() { return lastCast; }
 	protected long cooldown;
+	public long getCooldown() { return cooldown; }
 	protected double manaCost;
 	protected double damage;
 	protected boolean activated;

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.LightFactory;
@@ -20,7 +19,6 @@ import com.ludum.entities.enemies.Enemy;
 import com.ludum.entities.factories.Barracks;
 import com.ludum.entities.factories.Farm;
 import com.ludum.entities.items.Grave;
-import com.ludum.entities.spells.Spell;
 import com.ludum.entities.spells.SpellEffect;
 import com.ludum.gfx.Screen;
 
@@ -218,12 +216,12 @@ public class Game {
 		messages = Collections.synchronizedList(new ArrayList<>());
 		
 		// Add a peasant farm.
-		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 64), 64));
+		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 128), 128));
 		farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
 		factories.add(farm);
 		
 		// Add a barracks.
-		Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 50), (Game.HEIGHT - 50)));
+		Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 128), (Game.HEIGHT - 128)));
 		barracks.addLight(lightFactory.createLight(barracks.getSpawnLocation(), LightType.TORCH));
 		factories.add(barracks);
 		
@@ -403,12 +401,12 @@ public class Game {
 				messages.clear();
 				
 				// Add a peasant farm.
-				Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));
+				Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 128), 128));
 				farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
 				factories.add(farm);
 				
 				// Add a barracks.
-				Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 50), (Game.HEIGHT - 50)));
+				Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 128), (Game.HEIGHT - 128)));
 				barracks.addLight(lightFactory.createLight(barracks.getSpawnLocation(), LightType.TORCH));
 				factories.add(barracks);
 				

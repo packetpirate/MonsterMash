@@ -1,5 +1,6 @@
 package com.ludum;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -7,8 +8,6 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.util.Iterator;
-import java.util.Map;
 
 import com.ludum.entities.Player;
 import com.ludum.entities.spells.EldritchBolt;
@@ -118,11 +117,23 @@ public class HUD {
 		g2d.setColor(Color.BLACK);
 		g2d.fill(rect);
 		
+		Spell sp = game.player.getSpells().get(name);
+		
+		double alpha = ((Game.time.getElapsedMillis() - sp.getLastCast()) / (double)sp.getCooldown());
+		if(alpha > 1.0f) alpha = 1.0f;
+		else if(alpha < 0.0f) alpha = 0.0f;
+		AlphaComposite saved = (AlphaComposite) g2d.getComposite();
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)alpha));
 		game.player.getSpells().get(name).renderIcon(g2d, new Point2D.Double(rect.x, rect.y));
+		g2d.setComposite(saved);
 		
 		Stroke oldStroke = g2d.getStroke();
 		if(i == game.player.getSelectedSpell()) {
-			g2d.setColor(Color.WHITE);
+			if(game.player.getCurrentSpell().canCast()) {
+				g2d.setColor(new Color(0x990000));
+			} else {
+				g2d.setColor(Color.WHITE);
+			}
 			g2d.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
                     1.0f, new float[]{16.0f, 16.0f}, 8.0f));
 		} else g2d.setColor(Color.DARK_GRAY);

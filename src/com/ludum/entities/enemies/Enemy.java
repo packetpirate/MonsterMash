@@ -14,6 +14,7 @@ import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.Projectile;
 import com.ludum.entities.Status;
 import com.ludum.entities.minions.Minion;
+import com.ludum.gfx.Screen;
 
 public class Enemy {
 	public EnemyFactory origin;
@@ -68,26 +69,9 @@ public class Enemy {
 				while(it.hasNext()) {
 					Minion m = it.next();
 					
-					double a = (m.location.x - location.x);
-					double b = (m.location.y - location.y);
-					double dist = Math.sqrt((a * a) + (b * b));
+					double dist = Screen.dist(location, m.location);
 					if(m.isAlive() && m.canTakeDamage() && (dist <= 20)) {
 						m.takeDamage(damage);
-					}
-				}
-			}
-		}
-		
-		synchronized(projectiles) {
-			if(!projectiles.isEmpty()) {
-				Iterator<Projectile> it = projectiles.iterator();
-				while(it.hasNext()) {
-					Projectile p = it.next();
-					
-					p.update(game);
-					if(!p.alive) {
-						it.remove();
-						continue;
 					}
 				}
 			}

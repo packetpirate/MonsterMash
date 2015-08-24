@@ -22,8 +22,8 @@ public class Soldier extends Enemy{
 		if(isAlive()) {
 			// Moves within firing range of player and shoots.
 			double theta = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));
-			double dx = Math.cos(theta) * Archer.SPEED;
-			double dy = Math.sin(theta) * Archer.SPEED;
+			double dx = Math.cos(theta) * Soldier.SPEED;
+			double dy = Math.sin(theta) * Soldier.SPEED;
 	
 			location.x += dx;
 			location.y += dy;

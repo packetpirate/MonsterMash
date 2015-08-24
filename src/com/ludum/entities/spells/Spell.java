@@ -6,20 +6,22 @@ import java.awt.geom.Point2D;
 import com.ludum.Game;
 
 public class Spell {
-	protected String name;
-	public String getName() { return name; }
-	
+	public String getName() { return ""; }
 	protected long lastCast;
 	protected long cooldown;
 	protected double manaCost;
 	protected double damage;
+	protected boolean activated;
+	public void activate() { activated = true; }
+	public void deactivate() { activated = false; }
+	public boolean isActive() { return activated; }
 	
-	public Spell(String name, long cooldown, int manaCost, double damage) {
-		this.name = name;
+	public Spell(long cooldown, int manaCost, double damage) {
 		this.lastCast = Game.time.getElapsedMillis() - cooldown;
 		this.cooldown = cooldown;
 		this.manaCost = manaCost;
 		this.damage = damage;
+		this.activated = false;
 	}
 	
 	public void update(Game game) {

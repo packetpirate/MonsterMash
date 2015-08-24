@@ -31,6 +31,21 @@ public class Archer extends Enemy {
 	public void update(Game game) {
 		super.update(game);
 		
+		synchronized(projectiles) {
+			if(!projectiles.isEmpty()) {
+				Iterator<Projectile> it = projectiles.iterator();
+				while(it.hasNext()) {
+					Projectile p = it.next();
+					
+					p.update(game);
+					if(!p.alive) {
+						it.remove();
+						continue;
+					}
+				}
+			}
+		}
+		
 		if(isAlive()) {
 			// Moves within firing range of player and shoots.
 			double theta = Math.atan2((game.player.location.y - location.y), (game.player.location.x - location.x));

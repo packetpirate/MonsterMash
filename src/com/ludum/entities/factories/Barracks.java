@@ -10,11 +10,12 @@ import com.ludum.entities.enemies.EnemyType;
 
 public class Barracks extends EnemyFactory {
 	public Barracks(Point2D.Double position) {
-		super("Barracks", 1000, 4000, 5, new Dimension(100, 100), position, 
+		super("Barracks", 1000, 4000, 5, position, 
 				new Point2D.Double((position.x - 20), (position.y + 30)));
 		
 		addEnemyType(EnemyType.ARCHER);
 		addEnemyType(EnemyType.SOLDIER);
+		addEnemyType(EnemyType.CLERIC);
 	}
 	
 	@Override
@@ -27,6 +28,7 @@ public class Barracks extends EnemyFactory {
 		
 		// Draw a "health" bar.
 		int hW = (int)((health / maxHealth) * 82);
+		Dimension size = new Dimension(100, 100);
 		g2d.fillRect((int)(position.x - ((size.width / 2) - 5)), (int)(position.y - ((size.width / 2) - 5)), 90, 20);
 		g2d.setColor(Color.RED);
 		g2d.fillRect((int)(position.x - ((size.width / 2) - 9)), (int)(position.y - ((size.width / 2) - 9)), hW, 12);

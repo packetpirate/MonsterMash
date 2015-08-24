@@ -10,6 +10,7 @@ import java.util.Random;
 import com.ludum.Game;
 import com.ludum.entities.enemies.Enemy;
 import com.ludum.entities.enemies.EnemyType;
+import com.ludum.gfx.Textures;
 
 public class EnemyFactory {
 	private Random r;
@@ -22,7 +23,6 @@ public class EnemyFactory {
 	protected int enemiesSpawned;
 	public void enemyDeath() { enemiesSpawned--; }
 	protected int spawnCap;
-	protected Dimension size;
 	protected Point2D.Double position;
 	public Point2D.Double getPosition() { return position; }
 	protected Point2D.Double spawn;
@@ -32,7 +32,7 @@ public class EnemyFactory {
 	public Light getLight() { return light; }
 	public void addLight(Light light) { this.light = light; }
 	
-	public EnemyFactory(String name, double health, long spawnRate, int spawnCap, Dimension size, Point2D.Double position, Point2D.Double spawn) {
+	public EnemyFactory(String name, double health, long spawnRate, int spawnCap, Point2D.Double position, Point2D.Double spawn) {
 		this.r = new Random();
 		
 		this.name = name;
@@ -42,7 +42,6 @@ public class EnemyFactory {
 		this.spawnRate = spawnRate;
 		this.enemiesSpawned = 0;
 		this.spawnCap = spawnCap;
-		this.size = size;
 		this.position = position;
 		this.spawn = spawn;
 		this.enemyTypes = new ArrayList<>();
@@ -68,6 +67,8 @@ public class EnemyFactory {
 	}
 	
 	public boolean collision(Point2D.Double target) {
+		Dimension size = new Dimension(Textures.FARM.img.getWidth(),
+									   Textures.FARM.img.getHeight());
 		return ((target.x >= (position.x - (size.width / 2))) && 
 				(target.x <= (position.x + (size.width / 2))) && 
 				(target.y >= (position.y - (size.height / 2))) && 

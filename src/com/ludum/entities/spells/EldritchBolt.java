@@ -10,8 +10,13 @@ import com.ludum.entities.LightType;
 import com.ludum.gfx.Textures;
 
 public class EldritchBolt extends Spell {
+	public static final String NAME = "Eldritch Bolt";
+	
+	@Override
+	public String getName() { return EldritchBolt.NAME; }
+	
 	public EldritchBolt() {
-		super("Eldritch Bolt", 200, 5, 10);
+		super(200, 5, 10);
 	}
 	
 	@Override

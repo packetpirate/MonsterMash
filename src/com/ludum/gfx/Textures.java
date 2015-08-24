@@ -15,6 +15,9 @@ public enum Textures {
 	PEASANT(Textures.loadImage("/images/peasant.png")),
 	SOLDIER(Textures.loadImage("/images/soldier.png")),
 	ARCHER(Textures.loadImage("/images/archer.png")),
+	CLERIC(Textures.loadImage("/images/cleric.png")),
+	
+	FARM(Textures.loadImage("/images/farm.png")),
 	
 	ELDRITCH_BOLT(Textures.loadImage("/images/eldritch_bolt.png")),
 	ELDRITCH_BOLT_ICON(Textures.loadImage("/images/eldritch_bolt_icon.png")),
@@ -23,9 +26,11 @@ public enum Textures {
 	LIGHTNING_BOLT_ICON(Textures.loadImage("/images/lightning_bolt_icon.png")),
 	SUMMON_ZOMBIE_ICON(Textures.loadImage("/images/summon_zombie_icon.png")),
 	SUMMON_SKELETON_ICON(Textures.loadImage("/images/summon_skeleton_icon.png")),
+	SUMMON_WRAITH_ICON(Textures.loadImage("/images/summon_wraith_icon.png")),
 	
 	ZOMBIE(Textures.loadImage("/images/zombie.png")),
-	SKELETON(Textures.loadImage("/images/skeleton.png"));
+	SKELETON(Textures.loadImage("/images/skeleton.png")),
+	WRAITH(Textures.loadImage("/images/wraith.png"));
 	
 	public BufferedImage img;
 	

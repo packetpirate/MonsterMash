@@ -13,10 +13,14 @@ import com.ludum.entities.enemies.Enemy;
 import com.ludum.gfx.Textures;
 
 public class Fireball extends Spell {
+	public static final String NAME = "Fireball";
 	private static final int BLAST_RADIUS = 100;
 	
+	@Override
+	public String getName() { return Fireball.NAME; }
+	
 	public Fireball() {
-		super("Fireball", 1500, 25, 50);
+		super(1500, 25, 50);
 	}
 	
 	@Override

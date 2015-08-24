@@ -7,8 +7,17 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+import java.util.Iterator;
+import java.util.Map;
 
 import com.ludum.entities.Player;
+import com.ludum.entities.spells.EldritchBolt;
+import com.ludum.entities.spells.Fireball;
+import com.ludum.entities.spells.LightningBolt;
+import com.ludum.entities.spells.Spell;
+import com.ludum.entities.spells.summons.SummonSkeleton;
+import com.ludum.entities.spells.summons.SummonWraith;
+import com.ludum.entities.spells.summons.SummonZombie;
 import com.ludum.gfx.Textures;
 
 public class HUD {
@@ -50,8 +59,9 @@ public class HUD {
 			g2d.fill(exp);
 			
 			{ // Draw the spell slot bar.
+				int slots = game.player.getSpellCount();
 				int slotSize = 32;
-				int slotBarWidth = (slotSize * game.player.getSpells().size()) + ((game.player.getSpells().size() + 1) * 4);
+				int slotBarWidth = (slotSize * slots) + ((slots + 1) * 4);
 				int slotBarHeight = slotSize + 8;
 				int slotBarX = ((Game.WIDTH / 2) - (slotBarWidth / 2));
 				int slotBarY = (Game.HEIGHT - slotBarHeight - 5);
@@ -61,28 +71,62 @@ public class HUD {
 				g2d.setColor(Color.WHITE);
 				g2d.drawRect(slotBarX, slotBarY, slotBarWidth, slotBarHeight);
 				
-				for(int i = 0; i < game.player.getSpells().size(); i++) {
-					Rectangle2D.Double rect = new Rectangle2D.Double((slotBarX + (i * 32) + (i * 4) + 4), (slotBarY + 4), 32, 32);
-					g2d.setColor(Color.BLACK);
-					g2d.fill(rect);
-					
-					game.player.getSpells().get(i).renderIcon(g2d, new Point2D.Double(rect.x, rect.y));
-					
-					Stroke oldStroke = g2d.getStroke();
-					if(i == game.player.getSelectedSpell()) {
-						g2d.setColor(Color.WHITE);
-						g2d.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-                                1.0f, new float[]{16.0f, 16.0f}, 8.0f));
-					} else g2d.setColor(Color.DARK_GRAY);
-					g2d.draw(rect);
-					g2d.setStroke(oldStroke);
+				int i = 0;
+				
+				if(game.player.getSpells().get(EldritchBolt.NAME).isActive()) {
+					drawSpellSlot(g2d, EldritchBolt.NAME, slotBarX, slotBarY, i);
+					i++;
+				}
+				if(game.player.getSpells().get(Fireball.NAME).isActive()) {
+					drawSpellSlot(g2d, Fireball.NAME, slotBarX, slotBarY, i);
+					i++;	
+				}
+				if(game.player.getSpells().get(LightningBolt.NAME).isActive()) {
+					drawSpellSlot(g2d, LightningBolt.NAME, slotBarX, slotBarY, i);
+					i++;
+				}
+				if(game.player.getSpells().get(SummonZombie.NAME).isActive()) {
+					drawSpellSlot(g2d, SummonZombie.NAME, slotBarX, slotBarY, i);
+					i++;
+				}
+				if(game.player.getSpells().get(SummonSkeleton.NAME).isActive()) {
+					drawSpellSlot(g2d, SummonSkeleton.NAME, slotBarX, slotBarY, i);
+					i++;
+				}
+				if(game.player.getSpells().get(SummonWraith.NAME).isActive()) {
+					drawSpellSlot(g2d, SummonWraith.NAME, slotBarX, slotBarY, i);
+					i++;
 				}
 			} // End spell slot drawing.
+			
+			synchronized(game.messages) {
+				for(Message msg : game.messages) {
+					msg.render(g2d);
+				}
+			}
 
 			g2d.setColor(Color.WHITE);
 			g2d.drawString(("Level: " + game.player.getLevel()), 5, 120);
 			g2d.drawString(("Current Spell: " + game.player.getCurrentSpell().getName()), 5, 135);
 			g2d.drawString(("Summon Points: " + game.player.getSummonPoints()), 5, 150);
 		} // End drawing health and mana.
+	}
+	
+	private void drawSpellSlot(Graphics2D g2d, String name, int slotBarX, int slotBarY, int i) {
+		Rectangle2D.Double rect = new Rectangle2D.Double((slotBarX + (i * 32) + (i * 4) + 4), 
+														 (slotBarY + 4), 32, 32);
+		g2d.setColor(Color.BLACK);
+		g2d.fill(rect);
+		
+		game.player.getSpells().get(name).renderIcon(g2d, new Point2D.Double(rect.x, rect.y));
+		
+		Stroke oldStroke = g2d.getStroke();
+		if(i == game.player.getSelectedSpell()) {
+			g2d.setColor(Color.WHITE);
+			g2d.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
+                    1.0f, new float[]{16.0f, 16.0f}, 8.0f));
+		} else g2d.setColor(Color.DARK_GRAY);
+		g2d.draw(rect);
+		g2d.setStroke(oldStroke);
 	}
 }

@@ -4,15 +4,19 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ludum.Game;
+import com.ludum.Message;
 import com.ludum.entities.minions.Minion;
 import com.ludum.entities.spells.EldritchBolt;
 import com.ludum.entities.spells.Fireball;
 import com.ludum.entities.spells.LightningBolt;
 import com.ludum.entities.spells.Spell;
 import com.ludum.entities.spells.summons.SummonSkeleton;
+import com.ludum.entities.spells.summons.SummonWraith;
 import com.ludum.entities.spells.summons.SummonZombie;
 import com.ludum.gfx.Textures;
 
@@ -57,24 +61,86 @@ public class Player {
 	public int getExperience() { return experience; }
 	private int experienceToLevel;
 	public int getExperienceToLevel() { return experienceToLevel; }
-	public void addExperience(int exp) {
+	public void addExperience(Game game, int exp) {
 		experience += exp;
 		if(experience >= experienceToLevel) {
+			// Level up!
 			int carryOver = experience - experienceToLevel;
 			experience = carryOver;
 			level++;
+			game.messages.add(new Message("Level Up!", new Point2D.Double(location.x, (location.y - 32)), 3000) {
+				@Override
+				public void update(Game game) {
+					this.center.x = game.player.location.x;
+					this.center.y = game.player.location.y - 32;
+				}
+			});
+			
+			// Add to maximum health and mana.
+			Player.MAX_HEALTH += 20;
+			health = Player.MAX_HEALTH;
+			Player.MAX_MANA += 20;
+			mana = Player.MAX_MANA;
+			
+			// Determine new experience required to level.
+			experienceToLevel = level * 150;
+			
+			// Get level up reward!
+			switch(level) {
+				case 2: {
+					spells.get("Summon Zombie").activate();
+					spellCount++;
+					break;
+				}
+				case 3: {
+					spells.get("Fireball").activate();
+					spellCount++;
+					break;
+				}
+				case 5: {
+					spells.get("Lightning Bolt").activate();
+					spellCount++;
+					break;
+				}
+				case 7: {
+					spells.get("Summon Skeleton").activate();
+					spellCount++;
+					break;
+				}
+				case 10: {
+					spells.get("Summon Wraith").activate();
+					spellCount++;
+					break;
+				}
+				default:
+					break;
+			}
+			
+			selectSpell(0);
 		}
 	}
 	
-	private List<Spell> spells;
-	public List<Spell> getSpells() { return spells; }
+	private int spellCount;
+	public int getSpellCount() { return spellCount; }
+	private Map<String, Spell> spells;
+	public Map<String, Spell> getSpells() { return spells; }
 	private int selectedSpell;
 	public int getSelectedSpell() { return selectedSpell; }
 	public Spell getCurrentSpell() {
-		return spells.get(selectedSpell);
+		List<String> spellNames = new ArrayList<>();
+		synchronized(spells) {
+			Iterator it = spells.entrySet().iterator();
+			while(it.hasNext()) {
+				Map.Entry<String, Spell> pair = (Map.Entry<String, Spell>) it.next();
+				if(pair.getValue().isActive()) {
+					spellNames.add(pair.getKey());
+				}
+			}
+		}
+		return spells.get(spellNames.get(selectedSpell));
 	}
 	public void selectSpell(int slot) {
-		if(slot < spells.size()) selectedSpell = slot;
+		if(slot < spellCount) selectedSpell = slot;
 	}
 	public void castSpell(Game game) {
 		getCurrentSpell().cast(game);
@@ -99,15 +165,18 @@ public class Player {
 		mana = 50;
 		level = 1;
 		experience = 0;
-		experienceToLevel = 300;
+		experienceToLevel = 150;
 		
-		spells = new ArrayList<>();
+		spells = new LinkedHashMap<>();
 		selectedSpell = 0;
-		spells.add(new EldritchBolt());
-		spells.add(new Fireball());
-		spells.add(new LightningBolt());
-		spells.add(new SummonZombie());
-		spells.add(new SummonSkeleton());
+		spells.put(EldritchBolt.NAME, new EldritchBolt());
+		spells.put(Fireball.NAME, new Fireball());
+		spells.put(LightningBolt.NAME, new LightningBolt());
+		spells.put(SummonZombie.NAME, new SummonZombie());
+		spells.put(SummonSkeleton.NAME, new SummonSkeleton());
+		spells.put(SummonWraith.NAME, new SummonWraith());
+		spells.get(EldritchBolt.NAME).activate();
+		spellCount = 1;
 		
 		summonCap = Player.MAX_SUMMONS;
 		minions = new ArrayList<>();
@@ -122,9 +191,17 @@ public class Player {
 		mana = 50;
 		level = 1;
 		experience = 0;
-		experienceToLevel = 300;
+		experienceToLevel = 150;
 		
 		selectedSpell = 0;
+		Iterator it = spells.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry<String, Spell> pair = (Map.Entry<String, Spell>) it.next();
+			if(!pair.getKey().equals(EldritchBolt.NAME)) {
+				pair.getValue().deactivate();
+			}
+		}
+		spellCount = 1;
 		
 		summonCap = Player.MAX_SUMMONS;
 		minions.clear();
@@ -137,8 +214,12 @@ public class Player {
 		mana += MANA_REGEN_RATE;
 		if(mana >= MAX_MANA) mana = MAX_MANA;
 		
-		for(Spell sp : spells) {
-			sp.update(game);
+		synchronized(spells) {
+			Iterator it = spells.entrySet().iterator();
+			while(it.hasNext()) {
+				Map.Entry<String, Spell> pair = (Map.Entry<String, Spell>) it.next();
+				pair.getValue().update(game);
+			}
 		}
 		
 		synchronized(minions) {

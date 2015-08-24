@@ -14,14 +14,18 @@ import com.ludum.entities.enemies.Enemy;
 import com.ludum.gfx.Textures;
 
 public class LightningBolt extends Spell {
+	public static final String NAME = "Lightning Bolt";
 	private static final int MAX_JUMPS = 3;
 	private static final int JUMP_RANGE = 300;
 	
 	public static List<Point2D.Double> strikes;
 	public static long strikeTime;
 	
+	@Override
+	public String getName() { return LightningBolt.NAME; }
+	
 	public LightningBolt() {
-		super("Lightning Bolt", 3000, 80, 60);
+		super(3000, 80, 100);
 		
 		LightningBolt.strikes = new ArrayList<>();
 		LightningBolt.strikeTime = 0;

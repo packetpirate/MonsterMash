@@ -11,12 +11,16 @@ import com.ludum.entities.spells.Spell;
 import com.ludum.gfx.Textures;
 
 public class SummonSkeleton extends Spell {
+	public static final String NAME = "Summon Skeleton";
 	public static final int FEAR_RADIUS = 100;
 	public static final int FEAR_CHANCE = 4; // as in 4%
 	// TODO: play with fear chance percentage a bit
 	
+	@Override
+	public String getName() { return SummonSkeleton.NAME; }
+	
 	public SummonSkeleton() {
-		super("Summon Skeleton", 5000, 20, 0);
+		super(5000, 20, 0);
 	}
 	
 	@Override

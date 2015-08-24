@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.LightFactory;
@@ -19,6 +20,7 @@ import com.ludum.entities.enemies.Enemy;
 import com.ludum.entities.factories.Barracks;
 import com.ludum.entities.factories.Farm;
 import com.ludum.entities.items.Grave;
+import com.ludum.entities.spells.Spell;
 import com.ludum.entities.spells.SpellEffect;
 import com.ludum.gfx.Screen;
 
@@ -36,6 +38,7 @@ public class Game {
 	public List<Enemy> enemies;
 	public List<SpellEffect> spellEffects;
 	public List<Grave> graves;
+	public List<Message> messages;
 	
 	public Player player;
 	
@@ -93,17 +96,17 @@ public class Game {
 			public void mouseWheelMoved(MouseWheelEvent mw) {
 				if((Game.state == GameState.GAME_STARTED) && !paused) {
 					// Only do this if the player has more than one spell.
-					if(player.getSpells().size() > 1) {
+					if(player.getSpellCount() > 1) {
 						int direction = mw.getWheelRotation();
 						if(direction < 0) { // Mouse scrolled up.
 							// Move spell selection to the right.
-							if((player.getSelectedSpell() + 1) >= player.getSpells().size()) {
+							if((player.getSelectedSpell() + 1) >= player.getSpellCount()) {
 								player.selectSpell(0);
 							} else player.selectSpell(player.getSelectedSpell() + 1);
 						} else {			// Mouse scrolled down.
 							// Move spell selection to the left.
 							if((player.getSelectedSpell() - 1) < 0) {
-								player.selectSpell(player.getSpells().size() - 1);
+								player.selectSpell(player.getSpellCount() - 1);
 							} else player.selectSpell(player.getSelectedSpell() - 1);
 						}
 					}
@@ -137,43 +140,43 @@ public class Game {
 					}
 
 					if(key == KeyEvent.VK_1) {
-						if(!screen.keys[6]) player.selectSpell(0);
+						if(!screen.keys[6] && (player.getSpellCount() >= 1)) player.selectSpell(0);
 						screen.keys[6] = true;
 					}
 					if(key == KeyEvent.VK_2) {
-						if(!screen.keys[7]) player.selectSpell(1);
+						if(!screen.keys[7] && (player.getSpellCount() >= 2)) player.selectSpell(1);
 						screen.keys[7] = true;
 					}
 					if(key == KeyEvent.VK_3) {
-						if(!screen.keys[8]) player.selectSpell(2);
+						if(!screen.keys[8] && (player.getSpellCount() >= 3)) player.selectSpell(2);
 						screen.keys[8] = true;
 					}
 					if(key == KeyEvent.VK_4) {
-						if(!screen.keys[9]) player.selectSpell(3);
+						if(!screen.keys[9] && (player.getSpellCount() >= 4)) player.selectSpell(3);
 						screen.keys[9] = true;
 					}
 					if(key == KeyEvent.VK_5) {
-						if(!screen.keys[10]) player.selectSpell(4);
+						if(!screen.keys[10] && (player.getSpellCount() >= 5)) player.selectSpell(4);
 						screen.keys[10] = true;
 					}
 					if(key == KeyEvent.VK_6) {
-						if(!screen.keys[11]) player.selectSpell(5);
+						if(!screen.keys[11] && (player.getSpellCount() >= 6)) player.selectSpell(5);
 						screen.keys[11] = true;
 					}
 					if(key == KeyEvent.VK_7) {
-						if(!screen.keys[12]) player.selectSpell(6);
+						if(!screen.keys[12] && (player.getSpellCount() >= 7)) player.selectSpell(6);
 						screen.keys[12] = true;
 					}
 					if(key == KeyEvent.VK_8) {
-						if(!screen.keys[13]) player.selectSpell(7);
+						if(!screen.keys[13] && (player.getSpellCount() >= 8)) player.selectSpell(7);
 						screen.keys[13] = true;
 					}
 					if(key == KeyEvent.VK_9) {
-						if(!screen.keys[14]) player.selectSpell(8);
+						if(!screen.keys[14] && (player.getSpellCount() >= 9)) player.selectSpell(8);
 						screen.keys[14] = true;
 					}
 					if(key == KeyEvent.VK_0) {
-						if(!screen.keys[15]) player.selectSpell(9);
+						if(!screen.keys[15] && (player.getSpellCount() >= 10)) player.selectSpell(9);
 						screen.keys[15] = true;
 					}
 				}
@@ -212,9 +215,10 @@ public class Game {
 		enemies = Collections.synchronizedList(new ArrayList<>());
 		spellEffects = Collections.synchronizedList(new ArrayList<>());
 		graves = Collections.synchronizedList(new ArrayList<>());
+		messages = Collections.synchronizedList(new ArrayList<>());
 		
 		// Add a peasant farm.
-		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));
+		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 64), 64));
 		farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
 		factories.add(farm);
 		
@@ -332,7 +336,7 @@ public class Game {
 							
 							e.update(this);
 							if(!e.isAlive()) {
-								player.addExperience(e.getExperience());
+								player.addExperience(this, e.getExperience());
 								e.origin.enemyDeath();
 								graves.add(new Grave(new Point2D.Double(e.location.x, e.location.y)));
 								it.remove();
@@ -358,6 +362,22 @@ public class Game {
 					}
 				}
 				
+				// Delete expired messages.
+				synchronized(messages) {
+					if(!messages.isEmpty()) {
+						Iterator<Message> it = messages.iterator();
+						while(it.hasNext()) {
+							Message msg = it.next();
+							
+							msg.update(this);
+							if(!msg.isActive()) {
+								it.remove();
+								continue;
+							}
+						}
+					}
+				}
+				
 				// Handle deleting dead lights.
 				lightFactory.destroyLights();
 			} else {
@@ -367,23 +387,20 @@ public class Game {
 			screen.gameOver.update(this);
 			if(!reset) {
 				lightFactory.reset();
-				
 				for(EnemyFactory factory : factories) {
 					factory.reset();
 				}
 				factories.clear();
-				
 				for(Enemy e : enemies) {
 					e.reset();
 				}
 				enemies.clear();
-				
 				for(SpellEffect spe : spellEffects) {
 					spe.reset();
 				}
 				spellEffects.clear();
-				
 				graves.clear();
+				messages.clear();
 				
 				// Add a peasant farm.
 				Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 50), 50));

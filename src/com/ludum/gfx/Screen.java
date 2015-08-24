@@ -1,7 +1,6 @@
 package com.ludum.gfx;
 
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -10,7 +9,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
@@ -19,12 +17,6 @@ import com.ludum.GameOver;
 import com.ludum.GameState;
 import com.ludum.HUD;
 import com.ludum.Menu;
-import com.ludum.entities.EnemyFactory;
-import com.ludum.entities.enemies.Enemy;
-import com.ludum.entities.items.Grave;
-import com.ludum.entities.minions.Minion;
-import com.ludum.entities.spells.LightningBolt;
-import com.ludum.entities.spells.SpellEffect;
 
 public class Screen extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -61,76 +53,9 @@ public class Screen extends JPanel {
 		
 		if(Game.state == GameState.MENU) {
 			menu.render(g2d);
-		} else if(Game.state == GameState.GAME_STARTED) {
-			if(Textures.GRASS.img != null) {
-				BufferedImage grass = Textures.GRASS.img;
-				int xR = (Game.WIDTH / grass.getWidth());
-				int yR = (Game.HEIGHT / grass.getHeight());
-				for(int row = 0; row < yR; row++) {
-					for(int col = 0; col < xR; col++) {
-						g2d.drawImage(grass, (col * grass.getWidth()), (row * grass.getHeight()), null);
-					}
-				}
-			} else {
-				g2d.setColor(new Color(0x336600));
-				g2d.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
-			}
-			
+		} else if((Game.state == GameState.GAME_STARTED) || (Game.state == GameState.LEVEL_CLEAR)) {
 			AlphaComposite savedComp = (AlphaComposite)g2d.getComposite();
-			
-			synchronized(game.spellEffects) {
-				for(SpellEffect effect : game.spellEffects) {
-					if(effect.alive) effect.render(g2d);
-				}
-			}
-			// TODO: Figure out a better way to handle this.
-			// Specific: Draw lightning bolt strikes.
-			if(LightningBolt.strikes.size() > 1) {
-				g2d.setColor(new Color(0xE6FFFF));
-				g2d.setStroke(new BasicStroke(3.0f));
-				for(int i = 0; i < (LightningBolt.strikes.size() - 1); i++) {
-					Point2D.Double strike1 = LightningBolt.strikes.get(i);
-					Point2D.Double strike2 = LightningBolt.strikes.get(i + 1);
-					g2d.drawLine((int)strike1.x, (int)strike1.y, (int)strike2.x, (int)strike2.y);
-				}
-			}
-			// End drawing lightning bolt strikes.
-			
-			synchronized(game.factories) {
-				for(EnemyFactory factory : game.factories) {
-					if(factory.isAlive()) factory.render(g2d);
-				}
-			}
-			
-			synchronized(game.graves) {
-				for(Grave gr : game.graves) {
-					if(gr.isAlive()) gr.render(g2d);
-				}
-			}
-			
-			synchronized(game.enemies) {
-				for(Enemy enemy : game.enemies) {
-					if(enemy.isAlive()) enemy.render(g2d, game);
-				}
-			}
-			
-			synchronized(game.player.getMinions()) {
-				for(Minion m : game.player.getMinions()) {
-					if(m.isAlive()) m.render(g2d);
-				}
-			}
-			
-			game.player.render(g2d);
-			
-			// Draw lights in the light factory.
-			BufferedImage overlay = new BufferedImage(Game.WIDTH, Game.HEIGHT, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D og2d = overlay.createGraphics();
-			og2d.setColor(new Color(0.0f, 0.0f, 0.0f, 0.85f));
-			og2d.clearRect(0, 0, Game.WIDTH, Game.HEIGHT);
-			game.lightFactory.render(overlay);
-			
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
-			g2d.drawImage(overlay, 0, 0, null);
+			game.currentLevel.render(g2d, game);
 			g2d.setComposite(savedComp);
 			
 			hud.render(g2d);

@@ -50,11 +50,11 @@ public class Minion {
 	}
 	
 	public void update(Game game) {
-		synchronized(game.enemies) {
-			if(!game.enemies.isEmpty()) {
-				Enemy target = game.enemies.get(0);
+		synchronized(game.currentLevel.enemies) {
+			if(!game.currentLevel.enemies.isEmpty()) {
+				Enemy target = game.currentLevel.enemies.get(0);
 				
-				Iterator<Enemy> it = game.enemies.iterator();
+				Iterator<Enemy> it = game.currentLevel.enemies.iterator();
 				while(it.hasNext()) {
 					Enemy e = it.next();
 					

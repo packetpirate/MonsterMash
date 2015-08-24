@@ -51,10 +51,10 @@ public class LightningBolt extends Spell {
 	public void cast(Game game) {
 		if(game.player.currentMana() >= manaCost) {
 			game.player.useMana(manaCost);
-			game.registerSpellEffect(new SpellEffect(this, new Point2D.Double(game.player.location.x, game.player.location.y), new Point2D.Double(game.screen.mousePos.x, game.screen.mousePos.y)) {
+			game.currentLevel.spellEffects.add(new SpellEffect(this, new Point2D.Double(game.player.location.x, game.player.location.y), new Point2D.Double(game.screen.mousePos.x, game.screen.mousePos.y)) {
 				{ // Begin pseudo-constructor.
 					light = LightType.createLight(location, LightType.LIGHTNING_BOLT);
-					game.lightFactory.lights.add(light);
+					game.currentLevel.lightFactory.lights.add(light);
 					
 					setFlag("struck", false);
 				} // End pseudo-constructor.
@@ -78,10 +78,10 @@ public class LightningBolt extends Spell {
 					light.location.y = location.y;
 					
 					// Handle collisions with enemies.
-					synchronized(game.enemies) {
-						if(alive && !game.enemies.isEmpty()) {
+					synchronized(game.currentLevel.enemies) {
+						if(alive && !game.currentLevel.enemies.isEmpty()) {
 							int jumps = 0;
-							Iterator<Enemy> it = game.enemies.iterator();
+							Iterator<Enemy> it = game.currentLevel.enemies.iterator();
 							while(it.hasNext()) {
 								Enemy e = it.next();
 								
@@ -94,12 +94,12 @@ public class LightningBolt extends Spell {
 									light.killLight();
 									LightningBolt.strikes.add(new Point2D.Double(e.location.x, e.location.y));
 									LightningBolt.strikeTime = Game.time.getElapsedMillis();
-									game.lightFactory.createLight(new Point2D.Double(e.location.x, e.location.y), LightType.LIGHTNING_STRIKE);
+									game.currentLevel.lightFactory.createLight(new Point2D.Double(e.location.x, e.location.y), LightType.LIGHTNING_STRIKE);
 									e.takeDamage(spell.damage);
 								} else if((getFlag("struck") == Boolean.TRUE) && e.isAlive() && (dist <= LightningBolt.JUMP_RANGE) && (jumps < LightningBolt.MAX_JUMPS)) {
 									e.takeDamage(spell.damage);
 									LightningBolt.strikes.add(new Point2D.Double(e.location.x, e.location.y));
-									game.lightFactory.createLight(new Point2D.Double(e.location.x, e.location.y), LightType.LIGHTNING_STRIKE);
+									game.currentLevel.lightFactory.createLight(new Point2D.Double(e.location.x, e.location.y), LightType.LIGHTNING_STRIKE);
 									jumps++;
 								}
 							}
@@ -107,9 +107,9 @@ public class LightningBolt extends Spell {
 					}
 					
 					// Handle collisions with factories.
-					synchronized(game.factories) {
-						if(alive && !game.factories.isEmpty()) {
-							Iterator<EnemyFactory> it = game.factories.iterator();
+					synchronized(game.currentLevel.factories) {
+						if(alive && !game.currentLevel.factories.isEmpty()) {
+							Iterator<EnemyFactory> it = game.currentLevel.factories.iterator();
 							while(it.hasNext()) {
 								EnemyFactory ef = it.next();
 								

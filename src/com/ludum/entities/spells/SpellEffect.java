@@ -34,9 +34,9 @@ public class SpellEffect {
 	
 	public void update(Game game) {
 		// Handle collisions with enemies.
-		synchronized(game.enemies) {
-			if(alive && !game.enemies.isEmpty()) {
-				Iterator<Enemy> it = game.enemies.iterator();
+		synchronized(game.currentLevel.enemies) {
+			if(alive && !game.currentLevel.enemies.isEmpty()) {
+				Iterator<Enemy> it = game.currentLevel.enemies.iterator();
 				while(it.hasNext()) {
 					Enemy e = it.next();
 					
@@ -53,9 +53,9 @@ public class SpellEffect {
 		}
 		
 		// Handle collisions with factories.
-		synchronized(game.factories) {
-			if(alive && !game.factories.isEmpty()) {
-				Iterator<EnemyFactory> it = game.factories.iterator();
+		synchronized(game.currentLevel.factories) {
+			if(alive && !game.currentLevel.factories.isEmpty()) {
+				Iterator<EnemyFactory> it = game.currentLevel.factories.iterator();
 				while(it.hasNext()) {
 					EnemyFactory ef = it.next();
 					

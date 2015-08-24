@@ -22,7 +22,7 @@ import com.ludum.gfx.Textures;
 
 public class Player {
 	private final long INVINCIBILITY_TIME = 1000;
-	private final double MANA_REGEN_RATE = 0.5; // set back to 0.5 when not testing
+	private final double MANA_REGEN_RATE = 5.0; // set back to 0.5 when not testing
 	
 	public static double MAX_HEALTH = 100;
 	public static double MAX_MANA = 100;
@@ -68,7 +68,7 @@ public class Player {
 			int carryOver = experience - experienceToLevel;
 			experience = carryOver;
 			level++;
-			game.messages.add(new Message("Level Up!", new Point2D.Double(location.x, (location.y - 32)), 3000) {
+			game.currentLevel.messages.add(new Message("Level Up!", new Point2D.Double(location.x, (location.y - 32)), 3000) {
 				@Override
 				public void update(Game game) {
 					this.center.x = game.player.location.x;
@@ -129,9 +129,9 @@ public class Player {
 	public Spell getCurrentSpell() {
 		List<String> spellNames = new ArrayList<>();
 		synchronized(spells) {
-			Iterator it = spells.entrySet().iterator();
+			Iterator<Map.Entry<String, Spell>> it = spells.entrySet().iterator();
 			while(it.hasNext()) {
-				Map.Entry<String, Spell> pair = (Map.Entry<String, Spell>) it.next();
+				Map.Entry<String, Spell> pair = it.next();
 				if(pair.getValue().isActive()) {
 					spellNames.add(pair.getKey());
 				}
@@ -159,10 +159,13 @@ public class Player {
 	
 	public Point2D.Double location;
 	public Light light;
+	public void resetLight(Game game) {
+		light = game.currentLevel.lightFactory.createLight(location, LightType.PLAYER);
+	}
 	
 	public Player(Game game) {
 		health = MAX_HEALTH;
-		mana = 50;
+		mana = MAX_MANA;
 		level = 1;
 		experience = 0;
 		experienceToLevel = 150;
@@ -183,20 +186,29 @@ public class Player {
 		
 		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
 		light = LightType.createLight(location, LightType.PLAYER);
-		game.lightFactory.lights.add(light);
+		game.currentLevel.lightFactory.lights.add(light);
+	}
+	
+	public void levelTransition(Game game) {
+		resetLight(game);
+		minions.clear();
+		summonCap = Player.MAX_SUMMONS;
+		
+		health = MAX_HEALTH;
+		mana = MAX_MANA;
 	}
 	
 	public void resetPlayer(Game game) {
 		health = MAX_HEALTH;
-		mana = 50;
+		mana = MAX_MANA;
 		level = 1;
 		experience = 0;
 		experienceToLevel = 150;
 		
 		selectedSpell = 0;
-		Iterator it = spells.entrySet().iterator();
+		Iterator<Map.Entry<String, Spell>> it = spells.entrySet().iterator();
 		while(it.hasNext()) {
-			Map.Entry<String, Spell> pair = (Map.Entry<String, Spell>) it.next();
+			Map.Entry<String, Spell> pair = it.next();
 			if(!pair.getKey().equals(EldritchBolt.NAME)) {
 				pair.getValue().deactivate();
 			}
@@ -207,7 +219,7 @@ public class Player {
 		minions.clear();
 		
 		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
-		light = game.lightFactory.createLight(location, LightType.PLAYER);
+		light = game.currentLevel.lightFactory.createLight(location, LightType.PLAYER);
 	}
 	
 	public void update(Game game) {
@@ -215,9 +227,9 @@ public class Player {
 		if(mana >= MAX_MANA) mana = MAX_MANA;
 		
 		synchronized(spells) {
-			Iterator it = spells.entrySet().iterator();
+			Iterator<Map.Entry<String, Spell>> it = spells.entrySet().iterator();
 			while(it.hasNext()) {
-				Map.Entry<String, Spell> pair = (Map.Entry<String, Spell>) it.next();
+				Map.Entry<String, Spell> pair = it.next();
 				pair.getValue().update(game);
 			}
 		}

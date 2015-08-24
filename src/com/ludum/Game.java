@@ -6,38 +6,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
-import com.ludum.entities.EnemyFactory;
-import com.ludum.entities.LightFactory;
-import com.ludum.entities.LightType;
 import com.ludum.entities.Player;
-import com.ludum.entities.enemies.Enemy;
-import com.ludum.entities.factories.Barracks;
-import com.ludum.entities.factories.Chapel;
-import com.ludum.entities.factories.Farm;
-import com.ludum.entities.items.Grave;
-import com.ludum.entities.spells.SpellEffect;
 import com.ludum.gfx.Screen;
 
 public class Game {
 	public static final String TITLE = "Monster Mash";
-	public static final int WIDTH = 640;
-	public static final int HEIGHT = (WIDTH * 3) / 4;
+	public static final int WIDTH = 1024;
+	public static final int HEIGHT = 576;
 	
 	public static GameTime time;
 	public static GameState state;
 	
 	public Screen screen;
-	public LightFactory lightFactory;
-	public List<EnemyFactory> factories;
-	public List<Enemy> enemies;
-	public List<SpellEffect> spellEffects;
-	public List<Grave> graves;
-	public List<Message> messages;
+	public Level currentLevel;
 	
 	public Player player;
 	
@@ -62,6 +44,8 @@ public class Game {
 			public void mouseClicked(MouseEvent m) {
 				if(Game.state == GameState.MENU) {
 					screen.menu.dispatchClick(new Point2D.Double(screen.mousePos.x, screen.mousePos.y));
+				} else if(Game.state == GameState.LEVEL_CLEAR) {
+					screen.hud.dispatchClick(new Point2D.Double(screen.mousePos.x, screen.mousePos.y));
 				} else if(Game.state == GameState.GAME_OVER) {
 					screen.gameOver.dispatchClick(new Point2D.Double(screen.mousePos.x, screen.mousePos.y));
 				}
@@ -127,7 +111,7 @@ public class Game {
 					screen.keys[0] = true;
 				}
 				
-				if(Game.state == GameState.GAME_STARTED) {
+				if((Game.state == GameState.GAME_STARTED) || (Game.state == GameState.LEVEL_CLEAR)) {
 					if(key == KeyEvent.VK_W) screen.keys[1] = true;
 					if(key == KeyEvent.VK_A) screen.keys[2] = true;
 					if(key == KeyEvent.VK_S) screen.keys[3] = true;
@@ -187,7 +171,7 @@ public class Game {
 				
 				if(key == KeyEvent.VK_ESCAPE) screen.keys[0] = false;
 				
-				if(Game.state == GameState.GAME_STARTED) {
+				if((Game.state == GameState.GAME_STARTED) || (Game.state == GameState.LEVEL_CLEAR)) {
 					if(key == KeyEvent.VK_W) screen.keys[1] = false;
 					if(key == KeyEvent.VK_A) screen.keys[2] = false;
 					if(key == KeyEvent.VK_S) screen.keys[3] = false;
@@ -209,28 +193,7 @@ public class Game {
 			}
 		});
 		
-		lightFactory = new LightFactory();
-		factories = Collections.synchronizedList(new ArrayList<>());
-		enemies = Collections.synchronizedList(new ArrayList<>());
-		spellEffects = Collections.synchronizedList(new ArrayList<>());
-		graves = Collections.synchronizedList(new ArrayList<>());
-		messages = Collections.synchronizedList(new ArrayList<>());
-		
-		// Add a farm.
-		Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 128), 128));
-		farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
-		factories.add(farm);
-		
-		// Add a barracks.
-		Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 128), (Game.HEIGHT - 128)));
-		barracks.addLight(lightFactory.createLight(barracks.getSpawnLocation(), LightType.TORCH));
-		factories.add(barracks);
-		
-		// Add a chapel.
-		Chapel chapel = new Chapel(new Point2D.Double(64, (Game.HEIGHT - 64)));
-		chapel.addLight(lightFactory.createLight(chapel.getSpawnLocation(), LightType.TORCH));
-		factories.add(chapel);
-		
+		currentLevel = Level.generateLevel(this);
 		player = new Player(this);
 		
 		running = false;
@@ -242,7 +205,7 @@ public class Game {
 		if(Game.state == GameState.MENU) {
 			screen.menu.update(this);
 			if(reset) reset = false;
-		} else if(Game.state == GameState.GAME_STARTED) {
+		} else if((Game.state == GameState.GAME_STARTED) || (Game.state == GameState.LEVEL_CLEAR)) {
 			if(reset) reset = false;
 			if(!isPaused()) {
 				Game.time.update();
@@ -250,24 +213,6 @@ public class Game {
 				// Update player information.
 				player.update(this);
 				if(player.isAlive()) {
-					// Check for collisions with enemies.
-					synchronized(enemies) {
-						if(!enemies.isEmpty()) {
-							Iterator<Enemy> it = enemies.iterator();
-							while(it.hasNext()) {
-								Enemy e = it.next();
-								
-								double a = (e.location.x - player.location.x);
-								double b = (e.location.y - player.location.y);
-								double dist = Math.sqrt((a * a) + (b * b));
-								if(e.isAlive() && player.canTakeDamage() && (dist <= 10)) {
-									player.takeDamage(e.getDamage());
-									continue;
-								}
-							}
-						}
-					}
-					
 					if(screen.keys[1]) {
 						player.move(0, -5);
 					}
@@ -290,138 +235,20 @@ public class Game {
 					Game.state = GameState.GAME_OVER;
 				}
 				
-				// Handle spell effects.
-				for(SpellEffect effect : spellEffects) {
-					effect.update(this);
-				}
-				
-				// Remove spell effects that are out of bounds.
-				synchronized(spellEffects) {
-					if(!spellEffects.isEmpty()) {
-						Iterator<SpellEffect> it = spellEffects.iterator();
-						while(it.hasNext()) {
-							SpellEffect effect = it.next();
-							if((effect.location.x < 0) || (effect.location.x > Game.WIDTH) ||
-							   (effect.location.y < 0) || (effect.location.y > Game.HEIGHT) ||
-							   (!effect.alive)) {
-								effect.light.killLight();
-								it.remove();
-								continue;
-							}
-						}
-					}
-				}
-				
-				synchronized(factories) {
-					if(!factories.isEmpty()) {
-						Iterator<EnemyFactory> it = factories.iterator();
-						while(it.hasNext()) {
-							EnemyFactory factory = it.next();
-							
-							if(!factory.isAlive()) {
-								factory.getLight().killLight();
-							}
-							
-							if(factory.canSpawn()) {
-								synchronized(enemies) {
-									enemies.add(factory.spawnEnemy());
-								}
-							}
-						}
-					}
-				}
-				
-				// Update enemy information.
-				synchronized(enemies) {
-					if(!enemies.isEmpty()) {
-						Iterator<Enemy> it = enemies.iterator();
-						while(it.hasNext()) {
-							Enemy e = it.next();
-							
-							e.update(this);
-							if(!e.isAlive()) {
-								player.addExperience(this, e.getExperience());
-								e.origin.enemyDeath();
-								graves.add(new Grave(new Point2D.Double(e.location.x, e.location.y)));
-								it.remove();
-								continue;
-							}
-						}
-					}
-				}
-				
-				// ...update... graves?
-				synchronized(graves) {
-					if(!graves.isEmpty()) {
-						Iterator<Grave> it = graves.iterator();
-						while(it.hasNext()) {
-							Grave g = it.next();
-							
-							g.update(this);
-							if(!g.isAlive()) {
-								it.remove();
-								continue;
-							}
-						}
-					}
-				}
-				
-				// Delete expired messages.
-				synchronized(messages) {
-					if(!messages.isEmpty()) {
-						Iterator<Message> it = messages.iterator();
-						while(it.hasNext()) {
-							Message msg = it.next();
-							
-							msg.update(this);
-							if(!msg.isActive()) {
-								it.remove();
-								continue;
-							}
-						}
-					}
-				}
-				
-				// Handle deleting dead lights.
-				lightFactory.destroyLights();
+				currentLevel.update(this);
 			} else {
 				Game.time.increaseOffset();
 			}
+		} else if(Game.state == GameState.LEVEL_TRANSITION) {
+			// Generate a new level.
+			currentLevel = Level.generateLevel(this);
+			player.levelTransition(this);
+			Game.state = GameState.GAME_STARTED;
 		} else if(Game.state == GameState.GAME_OVER) {
 			screen.gameOver.update(this);
 			if(!reset) {
-				lightFactory.reset();
-				for(EnemyFactory factory : factories) {
-					factory.reset();
-				}
-				factories.clear();
-				for(Enemy e : enemies) {
-					e.reset();
-				}
-				enemies.clear();
-				for(SpellEffect spe : spellEffects) {
-					spe.reset();
-				}
-				spellEffects.clear();
-				graves.clear();
-				messages.clear();
-				
-				// Add a farm.
-				Farm farm = new Farm(new Point2D.Double((Game.WIDTH - 64), 128));
-				farm.addLight(lightFactory.createLight(farm.getSpawnLocation(), LightType.TORCH));
-				factories.add(farm);
-				
-				// Add a barracks.
-				Barracks barracks = new Barracks(new Point2D.Double((Game.WIDTH - 64), (Game.HEIGHT - 64)));
-				barracks.addLight(lightFactory.createLight(barracks.getSpawnLocation(), LightType.TORCH));
-				factories.add(barracks);
-				
-				// Add a chapel.
-				Chapel chapel = new Chapel(new Point2D.Double(64, (Game.HEIGHT - 64)));
-				chapel.addLight(lightFactory.createLight(chapel.getSpawnLocation(), LightType.TORCH));
-				factories.add(chapel);
-				
 				player.resetPlayer(this);
+				currentLevel = Level.generateLevel(this);
 				reset = true;
 				paused = false;
 			}
@@ -430,9 +257,5 @@ public class Game {
 	
 	public void render() {
 		screen.repaint();
-	}
-	
-	public void registerSpellEffect(SpellEffect effect) {
-		spellEffects.add(effect);
 	}
 }

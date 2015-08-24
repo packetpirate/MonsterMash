@@ -8,9 +8,9 @@ import javax.imageio.ImageIO;
 public enum Textures {
 	GRASS(Textures.loadImage("/images/grass1.png")),
 	GRAVE(Textures.loadImage("/images/grave.png")),
-	HUD1(Textures.loadImage("/images/hud1.png")),
 	
 	NECROMANCER(Textures.loadImage("/images/necromancer.png")),
+	SUMMON_ICON(Textures.loadImage("/images/summon_icon.png")),
 	
 	PEASANT(Textures.loadImage("/images/peasant.png")),
 	SOLDIER(Textures.loadImage("/images/soldier.png")),

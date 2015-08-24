@@ -34,10 +34,10 @@ public class Fireball extends Spell {
 	public void cast(Game game) {
 		if(game.player.currentMana() >= manaCost) {
 			game.player.useMana(manaCost);
-			game.registerSpellEffect(new SpellEffect(this, new Point2D.Double(game.player.location.x, game.player.location.y), new Point2D.Double(game.screen.mousePos.x, game.screen.mousePos.y)) {
+			game.currentLevel.spellEffects.add(new SpellEffect(this, new Point2D.Double(game.player.location.x, game.player.location.y), new Point2D.Double(game.screen.mousePos.x, game.screen.mousePos.y)) {
 				{ // Begin pseudo-constructor.
 					light = LightType.createLight(location, LightType.FIREBALL);
-					game.lightFactory.lights.add(light);
+					game.currentLevel.lightFactory.lights.add(light);
 					
 					setFlag("exploded", false);
 				} // End pseudo-constructor.
@@ -59,9 +59,9 @@ public class Fireball extends Spell {
 					light.location.y = location.y;
 					
 					// Handle collisions with enemies.
-					synchronized(game.enemies) {
-						if(alive && !game.enemies.isEmpty()) {
-							Iterator<Enemy> it = game.enemies.iterator();
+					synchronized(game.currentLevel.enemies) {
+						if(alive && !game.currentLevel.enemies.isEmpty()) {
+							Iterator<Enemy> it = game.currentLevel.enemies.iterator();
 							while(it.hasNext()) {
 								Enemy e = it.next();
 								
@@ -72,7 +72,7 @@ public class Fireball extends Spell {
 									alive = false;
 									setFlag("exploded", Boolean.TRUE);
 									light.killLight();
-									game.lightFactory.createLight(new Point2D.Double(location.x, location.y), LightType.EXPLOSION);
+									game.currentLevel.lightFactory.createLight(new Point2D.Double(location.x, location.y), LightType.EXPLOSION);
 									e.takeDamage(spell.damage);
 								} else if((getFlag("exploded") == Boolean.TRUE) && e.isAlive() && (dist <= Fireball.BLAST_RADIUS)) {
 									e.takeDamage(spell.damage / 2);
@@ -82,9 +82,9 @@ public class Fireball extends Spell {
 					}
 					
 					// Handle collisions with factories.
-					synchronized(game.factories) {
-						if(alive && !game.factories.isEmpty()) {
-							Iterator<EnemyFactory> it = game.factories.iterator();
+					synchronized(game.currentLevel.factories) {
+						if(alive && !game.currentLevel.factories.isEmpty()) {
+							Iterator<EnemyFactory> it = game.currentLevel.factories.iterator();
 							while(it.hasNext()) {
 								EnemyFactory ef = it.next();
 								

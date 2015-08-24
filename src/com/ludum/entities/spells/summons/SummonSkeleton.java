@@ -39,9 +39,9 @@ public class SummonSkeleton extends Spell {
 	@Override
 	public void cast(Game game) {
 		if(game.player.currentMana() >= manaCost) {
-			synchronized(game.graves) {
-				if(!game.graves.isEmpty()) {
-					Iterator<Grave> it = game.graves.iterator();
+			synchronized(game.currentLevel.graves) {
+				if(!game.currentLevel.graves.isEmpty()) {
+					Iterator<Grave> it = game.currentLevel.graves.iterator();
 					while(it.hasNext()) {
 						Grave g = it.next();
 						

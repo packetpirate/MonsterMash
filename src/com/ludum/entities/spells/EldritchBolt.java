@@ -30,10 +30,10 @@ public class EldritchBolt extends Spell {
 	public void cast(Game game) {
 		if(game.player.currentMana() >= manaCost) {
 			game.player.useMana(manaCost);
-			game.registerSpellEffect(new SpellEffect(this, new Point2D.Double(game.player.location.x, game.player.location.y), new Point2D.Double(game.screen.mousePos.x, game.screen.mousePos.y)) {
+			game.currentLevel.spellEffects.add(new SpellEffect(this, new Point2D.Double(game.player.location.x, game.player.location.y), new Point2D.Double(game.screen.mousePos.x, game.screen.mousePos.y)) {
 				{ // Begin pseudo-constructor.
 					light = LightType.createLight(location, LightType.ELDRITCH_BOLT);
-					game.lightFactory.lights.add(light);
+					game.currentLevel.lightFactory.lights.add(light);
 				} // End pseudo-constructor.
 				
 				@Override

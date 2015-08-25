@@ -34,7 +34,7 @@ There are 8 spells to learn in the game.
 - Priest - A force to be reckoned with. Let them get near your undead and you will be sorry.
 
 #### Additional Details
-The little pentagrams beneath your experience bar show how many summons you have left. Each summon spell consumes a specific amount of these. Spend them wisely!
+The little pentagrams beneath your experience bar show how many summons you have left. Each summon spell consumes a specific amount of these. Spend them wisely! To cast a Summon spell, click the grave of a fallen enemy.
 
 - Zombie - 1 Summon Point
 - Skeleton - 3 Summon Points

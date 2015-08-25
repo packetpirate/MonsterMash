@@ -1,8 +1,11 @@
 package com.ludum;
 
+import javax.swing.JApplet;
 import javax.swing.JFrame;
 
-public class MainComponent implements Runnable {
+public class MainComponent extends JApplet implements Runnable {
+	private static final long serialVersionUID = 1L;
+	
 	private Game game;
 	
 	public MainComponent() {

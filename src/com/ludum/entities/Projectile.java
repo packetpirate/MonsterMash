@@ -4,8 +4,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
 import com.ludum.Game;
+import com.ludum.entities.spells.SkullBarrier;
+import com.ludum.entities.spells.SpellEffect;
 import com.ludum.gfx.Screen;
 import com.ludum.gfx.Textures;
 
@@ -40,7 +43,27 @@ public class Projectile {
 			double dist = Math.sqrt((a * a) + (b * b));
 			if(dist <= 20) {
 				alive = false;
-				game.player.takeDamage(damage);
+				
+				if(SkullBarrier.skulls > 0) {
+					SkullBarrier.skulls--;
+					
+					// Find and delete a skull effect.
+					synchronized(game.currentLevel.spellEffects) {
+						Iterator<SpellEffect> it = game.currentLevel.spellEffects.iterator();
+						while(it.hasNext()) {
+							SpellEffect sp = it.next();
+							
+							if(sp.alive && (sp.spell.getName().equals(SkullBarrier.NAME))) {
+								sp.alive = false;
+								sp.light.killLight();
+								it.remove();
+								break;
+							}
+						}
+					}
+				} else {
+					game.player.takeDamage(damage);
+				}
 			}
 			
 			// Check to see if it has gone out of bounds.

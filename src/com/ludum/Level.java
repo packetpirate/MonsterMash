@@ -48,24 +48,6 @@ public class Level {
 	}
 	
 	public void update(Game game) {
-		// Check for collisions with enemies.
-		synchronized(enemies) {
-			if(!enemies.isEmpty()) {
-				Iterator<Enemy> it = enemies.iterator();
-				while(it.hasNext()) {
-					Enemy e = it.next();
-					
-					double a = (e.location.x - game.player.location.x);
-					double b = (e.location.y - game.player.location.y);
-					double dist = Math.sqrt((a * a) + (b * b));
-					if(e.isAlive() && game.player.canTakeDamage() && (dist <= 10)) {
-						game.player.takeDamage(e.getDamage());
-						continue;
-					}
-				}
-			}
-		}
-		
 		// Handle spell effects.
 		for(SpellEffect effect : spellEffects) {
 			effect.update(game);

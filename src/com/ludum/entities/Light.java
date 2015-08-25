@@ -81,6 +81,8 @@ public class Light {
 					ratio = Math.sqrt(ratio);
 					
 					int rgb = overlay.getRGB(i, j);
+					
+					@SuppressWarnings("unused")
 					int a = (rgb >> 24) & 0xff;
 					int r = (rgb >> 16) & 0xff;
 					int g = (rgb >> 8) & 0xff;

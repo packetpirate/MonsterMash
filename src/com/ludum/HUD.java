@@ -12,9 +12,11 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 import com.ludum.entities.Player;
+import com.ludum.entities.spells.BloodSiphon;
 import com.ludum.entities.spells.EldritchBolt;
 import com.ludum.entities.spells.Fireball;
 import com.ludum.entities.spells.LightningBolt;
+import com.ludum.entities.spells.SkullBarrier;
 import com.ludum.entities.spells.Spell;
 import com.ludum.entities.spells.summons.SummonSkeleton;
 import com.ludum.entities.spells.summons.SummonWraith;
@@ -124,6 +126,14 @@ public class HUD {
 			}
 			if(game.player.getSpells().get(LightningBolt.NAME).isActive()) {
 				drawSpellSlot(g2d, LightningBolt.NAME, slotBarX, slotBarY, i);
+				i++;
+			}
+			if(game.player.getSpells().get(BloodSiphon.NAME).isActive()) {
+				drawSpellSlot(g2d, BloodSiphon.NAME, slotBarX, slotBarY, i);
+				i++;
+			}
+			if(game.player.getSpells().get(SkullBarrier.NAME).isActive()) {
+				drawSpellSlot(g2d, SkullBarrier.NAME, slotBarX, slotBarY, i);
 				i++;
 			}
 			if(game.player.getSpells().get(SummonZombie.NAME).isActive()) {

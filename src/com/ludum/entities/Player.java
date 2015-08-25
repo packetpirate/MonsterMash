@@ -11,9 +11,11 @@ import java.util.Map;
 import com.ludum.Game;
 import com.ludum.Message;
 import com.ludum.entities.minions.Minion;
+import com.ludum.entities.spells.BloodSiphon;
 import com.ludum.entities.spells.EldritchBolt;
 import com.ludum.entities.spells.Fireball;
 import com.ludum.entities.spells.LightningBolt;
+import com.ludum.entities.spells.SkullBarrier;
 import com.ludum.entities.spells.Spell;
 import com.ludum.entities.spells.summons.SummonSkeleton;
 import com.ludum.entities.spells.summons.SummonWraith;
@@ -22,7 +24,7 @@ import com.ludum.gfx.Textures;
 
 public class Player {
 	private final long INVINCIBILITY_TIME = 1000;
-	private final double MANA_REGEN_RATE = 5.0; // set back to 0.5 when not testing
+	private final double MANA_REGEN_RATE = 0.5; // set back to 0.5 when not testing
 	
 	public static double MAX_HEALTH = 100;
 	public static double MAX_MANA = 100;
@@ -88,27 +90,37 @@ public class Player {
 			// Get level up reward!
 			switch(level) {
 				case 2: {
-					spells.get("Summon Zombie").activate();
+					spells.get(SummonZombie.NAME).activate();
 					spellCount++;
 					break;
 				}
 				case 3: {
-					spells.get("Fireball").activate();
+					spells.get(Fireball.NAME).activate();
 					spellCount++;
 					break;
 				}
 				case 5: {
-					spells.get("Lightning Bolt").activate();
+					spells.get(LightningBolt.NAME).activate();
+					spellCount++;
+					break;
+				}
+				case 6: {
+					spells.get(SkullBarrier.NAME).activate();
 					spellCount++;
 					break;
 				}
 				case 7: {
-					spells.get("Summon Skeleton").activate();
+					spells.get(SummonSkeleton.NAME).activate();
+					spellCount++;
+					break;
+				}
+				case 8:{
+					spells.get(BloodSiphon.NAME).activate();
 					spellCount++;
 					break;
 				}
 				case 10: {
-					spells.get("Summon Wraith").activate();
+					spells.get(SummonWraith.NAME).activate();
 					spellCount++;
 					break;
 				}
@@ -175,6 +187,8 @@ public class Player {
 		spells.put(EldritchBolt.NAME, new EldritchBolt());
 		spells.put(Fireball.NAME, new Fireball());
 		spells.put(LightningBolt.NAME, new LightningBolt());
+		spells.put(BloodSiphon.NAME, new BloodSiphon());
+		spells.put(SkullBarrier.NAME, new SkullBarrier());
 		spells.put(SummonZombie.NAME, new SummonZombie());
 		spells.put(SummonSkeleton.NAME, new SummonSkeleton());
 		spells.put(SummonWraith.NAME, new SummonWraith());
@@ -185,8 +199,6 @@ public class Player {
 		minions = new ArrayList<>();
 		
 		location = new Point2D.Double((Game.WIDTH / 2), (Game.HEIGHT / 2));
-		light = LightType.createLight(location, LightType.PLAYER);
-		game.currentLevel.lightFactory.lights.add(light);
 	}
 	
 	public void levelTransition(Game game) {

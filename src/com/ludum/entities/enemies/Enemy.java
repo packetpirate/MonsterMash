@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,8 @@ import com.ludum.Game;
 import com.ludum.entities.EnemyFactory;
 import com.ludum.entities.Projectile;
 import com.ludum.entities.Status;
+import com.ludum.entities.minions.Minion;
+import com.ludum.gfx.Screen;
 
 public class Enemy {
 	public EnemyFactory origin;
@@ -25,10 +28,8 @@ public class Enemy {
 	public Point2D.Double location;
 	protected Set<Status> statuses;
 	public void addStatus(Status status) { statuses.add(status); }
-	public void removeStatus(String name) { 
-		for(Status s : statuses) {
-			if(s.name == name) statuses.remove(s);
-		}
+	public void removeStatus(String name) {
+		if(statuses.remove(name)) System.out.printf("Status \"%s\" removed!\n", name);
 	}
 	public boolean hasStatus(String name) {
 		for(Status s : statuses) {
@@ -60,19 +61,48 @@ public class Enemy {
 	}
 	
 	public void update(Game game) {
-//		synchronized(game.player.getMinions()) {
-//			if(!game.player.getMinions().isEmpty()) {
-//				Iterator<Minion> it = game.player.getMinions().iterator();
-//				while(it.hasNext()) {
-//					Minion m = it.next();
-//					
-//					double dist = Screen.dist(location, m.location);
-//					if(m.isAlive() && m.canTakeDamage() && (dist <= 20)) {
-//						m.takeDamage(damage);
-//					}
-//				}
-//			}
-//		}
+		synchronized(statuses) {
+			if(!statuses.isEmpty()) {
+				Iterator<Status> it = statuses.iterator();
+				while(it.hasNext()) {
+					Status s = it.next();
+					
+					if(!s.isActive()) {
+						it.remove();
+						continue;
+					}
+				}
+			}
+		}
+		
+		if(isAlive()) {
+			if(hasStatus("siphon")) {
+				health -= 0.4;
+				game.player.heal(0.4);
+			}
+			
+			{ // Check for a collision with the player.
+				double dist = Screen.dist(location, game.player.location);
+				if(isAlive() && game.player.canTakeDamage() && (dist <= 16)) {
+					game.player.takeDamage(damage);
+				}
+			} // End player collision checking.
+			
+			// Check for collisions with minions.
+			synchronized(game.player.getMinions()) {
+				if(!game.player.getMinions().isEmpty()) {
+					Iterator<Minion> it = game.player.getMinions().iterator();
+					while(it.hasNext()) {
+						Minion m = it.next();
+						
+						double dist = Screen.dist(location, m.location);
+						if(m.isAlive() && m.canTakeDamage() && (dist <= 16)) {
+							m.takeDamage(damage);
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	public void render(Graphics2D g2d, Game game) {

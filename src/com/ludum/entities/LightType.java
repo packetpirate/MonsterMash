@@ -6,11 +6,13 @@ import java.awt.geom.Point2D;
 public enum LightType {
 	PLAYER(80, 5, Color.WHITE, false, 0, -1),
 	TORCH(150, 5, Color.ORANGE, true, 5, -1),
-	ELDRITCH_BOLT(10, 0, new Color(0x66E066), false, 0, -1),
+	ELDRITCH_BOLT(20, 0, new Color(0xD8B6D0), false, 0, -1),
 	FIREBALL(40, 1, Color.ORANGE, true, 10, -1),
 	EXPLOSION(60, 0, new Color(0xFFD633), true, 40, 1000),
 	LIGHTNING_BOLT(15, 0, Color.WHITE, true, 5, -1),
-	LIGHTNING_STRIKE(20, 0, new Color(0xE6FFFF), true, 5, 1000);
+	LIGHTNING_STRIKE(20, 0, new Color(0xE6FFFF), true, 5, 1000),
+	BLOOD_SIPHON(20, 0, new Color(0xBD2121), false, 0, -1),
+	SKULL_BARRIER(20, 0, Color.WHITE, false, 0, -1);
 	
 	int radius;
 	int minRadius;

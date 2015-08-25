@@ -193,8 +193,9 @@ public class Game {
 			}
 		});
 		
-		currentLevel = Level.generateLevel(this);
 		player = new Player(this);
+		currentLevel = Level.generateLevel(this);
+		player.resetLight(this);
 		
 		running = false;
 		paused = false;

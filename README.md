@@ -11,7 +11,9 @@ the people that live in them so that they can be used to create more undead!
 
 ### Controls
 ```
-WASD - Move your character.
+WASD - Movement
+Left Mouse - Cast Spell
+Mouse Wheel - Cycle through available spells.
+1-8 Keys - Select Spell
 P - Pause/Unpause the game.
-Left Mouse - Cast selected spell.
 ```

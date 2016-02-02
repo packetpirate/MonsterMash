@@ -1,6 +1,6 @@
 # Monster Mash
 
-!(Monster Mash Gameplay)[http://i.imgur.com/2yumjlA.png]
+![Monster Mash Gameplay](http://i.imgur.com/2yumjlA.png)
 
 ### Description
 Monster Mash is my entry for the Ludum Dare 33 game jam. The theme is "You Are the Monster".
